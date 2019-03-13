@@ -18,16 +18,18 @@ Professor Doutor Vítor Manuel Ferreira dos Santos
 DEM, UA
 Aveiro, Portugal
 
-# Table of contents
-
+<!-- # Table of contents -->
 - [ROBONUC: Mobile manipulator](#robonuc--mobile-manipulator)
   * [Thesis itle](#thesis-itle)
   * [Advisor](#advisor)
 - [Built with](#built-with)
   * [Hardware](#hardware)
-  * [ROS Industrial and FANUC](#ros-industrial-and-fanuc)
-  * [Calibration](#calibration)
-
+- [Installation guides](#installation-guides)
+  * [System: Robonuc mobile plataform](#system--robonuc-mobile-plataform)
+  * [System: Robot + kinect + laser](#system--robot---kinect---laser)
+    + [ROS Industrial and FANUC](#ros-industrial-and-fanuc)
+    + [Kinect drives](#kinect-drives)
+    + [Calibration](#calibration)
 
 # Built with
 
@@ -42,14 +44,14 @@ Microsoft Kinect
 
 Laser Sensor DT20 Hi
 
-* =============Installation guides==========
+# Installation guides
 
-#System: Robonuc mobile plataform
+## System: Robonuc mobile plataform
 
 
-#System: Robot + kinect + laser
+## System: Robot + kinect + laser
 
-## ROS Industrial and FANUC
+### ROS Industrial and FANUC
 
 ```
 sudo apt-get install ros-melodic-xacro 
@@ -91,7 +93,7 @@ On terminal, launch:
 ```
 roslaunch fanuc_lrmate200id_support robot_state_visualize_lrmate200id.launch robot_ip:=192.168.0.231
 ```
-##Kinect drives
+### Kinect drives
 
 ```
 sudo apt-get install ros-melodic-openni-camera ros-melodic-openni-launch
@@ -103,7 +105,7 @@ roslaunch openni_launch openni.launch
 ```
 And on Rviz add an image .
 
-## Calibration
+### Calibration
 
 ```
 cd ~/catkin_ws/src

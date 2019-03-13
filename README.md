@@ -19,15 +19,15 @@ DEM, UA
 Aveiro, Portugal
 
 # Table of contents
+
 - [ROBONUC: Mobile manipulator](#robonuc--mobile-manipulator)
   * [Thesis itle](#thesis-itle)
   * [Advisor](#advisor)
-- [Table of contents](#table-of-contents)
 - [Built with](#built-with)
   * [Hardware](#hardware)
-- [Installation guides](#installation-guides)
-    + [ROS Industrial and FANUC](#ros-industrial-and-fanuc)
-    + [Calibration](#calibration)
+  * [ROS Industrial and FANUC](#ros-industrial-and-fanuc)
+  * [Calibration](#calibration)
+
 
 # Built with
 
@@ -42,14 +42,14 @@ Microsoft Kinect
 
 Laser Sensor DT20 Hi
 
-# Installation guides
+* =============Installation guides==========
 
-##System: Robonuc mobile plataform
+#System: Robonuc mobile plataform
 
 
-##System: Robot + kinect + laser
+#System: Robot + kinect + laser
 
-### ROS Industrial and FANUC
+## ROS Industrial and FANUC
 
 ```
 sudo apt-get install ros-melodic-xacro 
@@ -91,7 +91,7 @@ On terminal, launch:
 ```
 roslaunch fanuc_lrmate200id_support robot_state_visualize_lrmate200id.launch robot_ip:=192.168.0.231
 ```
-###Kinect drives
+##Kinect drives
 
 ```
 sudo apt-get install ros-melodic-openni-camera ros-melodic-openni-launch
@@ -103,7 +103,7 @@ roslaunch openni_launch openni.launch
 ```
 And on Rviz add an image .
 
-### Calibration
+## Calibration
 
 ```
 cd ~/catkin_ws/src

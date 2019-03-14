@@ -38,6 +38,17 @@ Aveiro, Portugal
 
 ## Hardware
 
+Robutter II restructured (for more info see: http://lars.mec.ua.pt/public/LAR%20Projects/MobileManipulation/2017_BrunoVieira/ and http://lars.mec.ua.pt/public/LAR%20Projects/MobileManipulation/2017_VitorSilva/ )
+
+Arduino Leonardo ETH
+Arduino Micro
+
+Hokuyo URG-04LX-UG01
+Hokuyo UTM-30LX
+
+JoyStick/Gamepad Microsoft XBox 360
+
+-----
 Fanuc Robot LR Mate 200iD
 
 Microsoft Kinect
@@ -48,6 +59,46 @@ Laser Sensor DT20 Hi
 
 ## System: Robonuc mobile plataform
 
+(This section needs to be updated, because there are packages that have been cloned from other sources)
+
+Install moveit, navigation, and costmap-converter:
+```
+sudo apt-get update
+sudo apt-get install ros-melodic-moveit
+sudo apt-get install ros-melodic-navigation
+sudo apt-get install ros-melodic-costmap-converter
+
+sudo apt-get install ros-melodic-teb-local-planner
+```
+
+To install the package for xbox joystick:
+```
+sudo apt-get install ros-melodic-joy
+```
+
+Intall hector_slam by source, em catkin_ws/src/ : 
+```
+git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam
+```
+
+Maybe you need to install q4 and q5 (not sure, that q5 is necessary):
+```
+sudo apt-get install build-essential 
+sudo apt-get install qtcreator
+sudo apt-get install qt5-default
+sudo apt-get install qt4-default 
+```
+
+To compile, it is necessary to follow a certain order, because there are dependencies not included.
+```
+cd ~/catkin_ws
+catkin_make -pkg driver_base
+catkin_make -pkg hokuyo_node
+catkin_make -pkg r_plataform
+catkin_make -pkg comm_tcp
+
+catkin_make
+```
 
 ## System: Robot + kinect + laser
 

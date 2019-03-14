@@ -9,7 +9,7 @@ You can see my weekly blog at: https://tiagoatavares.github.io/tiagotavares_blog
 
 Department of Mechanical Engineering (DEM), University of Aveiro (UA)
 
-LAR: Laboratory of Automation and Robotics
+LAR: Laboratory of Automation and Robotics [ http://lars.mec.ua.pt/ ]
 
 2019
 

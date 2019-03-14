@@ -1,5 +1,7 @@
 # ROBONUC: Mobile manipulator
-My Masters Thesis Project 
+My Masters Thesis Project
+
+You can see my weekly blog at: https://tiagoatavares.github.io/tiagotavares_blog/
 
 ## Thesis itle
 
@@ -99,6 +101,17 @@ catkin_make -pkg comm_tcp
 
 catkin_make
 ```
+
+If you have some runtime errors in the automatic mode, or in map construction, check the position of the lasers.
+You just need to change the parameter "ttyACM", on launch file.
+Example:
+```
+<param name="port" type="string" value="/dev/ttyACM0" /> 
+                    --->
+<param name="port" type="string" value="/dev/ttyACM1" /> 
+```
+
+
 
 ## System: Robot + kinect + laser
 

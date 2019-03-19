@@ -89,7 +89,7 @@ def move_robot(plan, fraction, group):
 
 def debug_targetspose(uuid,normal,approx_point,eef_position_laser,yaw,pitch):
     roslaunch.configure_logging(uuid)
-    launch_objDetect_pointTF = roslaunch.parent.ROSLaunchParent(uuid, ["/home/joana/catkin_ws/src/Bin-picking/bin_picking/launch/objDetection_pointTFtranfer.launch"])
+    launch_objDetect_pointTF = roslaunch.parent.ROSLaunchParent(uuid, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/objDetection_pointTFtranfer.launch"])
     # Start Launch node objDetection and pointTFtransfer
     launch_objDetect_pointTF.start()
 

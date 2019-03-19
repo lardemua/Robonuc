@@ -21,9 +21,8 @@
 		<param name="intensity" value="false" />
 		<remap from="scan" to="scan1" />
 	</node>
-	
 	<node pkg="robonuc" type="vs_laser_receptor" name="vs_laser_receptor" output="screen"/>
 	<node pkg="robonuc" type="vs_platform_sim" name="vs_platform_sim" output="screen"/>
 	<node pkg="robonuc" type="vs_frame" name="vs_frame" output="screen"/>
-	
+
 </launch>

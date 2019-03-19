@@ -156,7 +156,7 @@ if raw_input("If you want to EXIT press 'e': ") == 'e' :
 
 uuid3 = roslaunch.rlutil.get_or_generate_uuid(None, False)
 roslaunch.configure_logging(uuid3)
-launch_sensorRS232 = roslaunch.parent.ROSLaunchParent(uuid3, ["/home/joana/catkin_ws/src/Bin-picking/bin_picking/launch/sensorRS232.launch"])
+launch_sensorRS232 = roslaunch.parent.ROSLaunchParent(uuid3, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/sensorRS232.launch"])
 # Start Launch node sensorRS232
 launch_sensorRS232.start()
 

@@ -17,7 +17,9 @@
 #include <stdlib.h>
 #include <wchar.h>
 
-robonuc::conjunto msg; 
+using namespace std;
+
+robonuc::ios msg; 
 
 int sockfd, portno, n;
 bool echoMode = false;
@@ -36,20 +38,19 @@ private:
 public:
 	Listener()
 	{
-		client_sub = nh.subscribe("ar_client_messages", 1000, &Listener::callback, this);
+		client_sub = nh.subscribe("io_client_messages", 1000, &Listener::callback, this);
 	}
 
-	void callback(const robonuc::conjunto msg) 
+	void callback(const robonuc::ios msg) 
 	{
 
     		char buffer[256];
 
-//		Shift no código para todas as funções e i/o corresponderem a um char possível de codificar através da tabela ascii
-		int codeio = msg.ios.code + 21;
-		ROS_INFO("INO Code %d",codeio-21);
+//		Shift the code so that all functions and the number of the I/O corresponde to a possible to encode char through the ascii table
+		int code_io = msg.code + 21;
+		ROS_INFO("INO Code %d",code_io-21);
 
-
-		char c = (char)codeio;
+		char c = (char)code_io;
 		const char *d = &c;
 
 		ROS_INFO("Char Codificado: %c ",c);
@@ -58,11 +59,13 @@ public:
 
 		    strcpy(buffer, d);
 
+				cout << "buffer=" + *buffer <<endl;
+
 		    n = write(sockfd,buffer,1);
 		    if (n < 0) 
 			 error("ERROR writing to socket");
 
-		    if (codeio<40 & codeio>30) {
+		    if (code_io<40 & code_io>30) {
 
 			    bzero(buffer, 256);
 			    n = read(sockfd,buffer,255);
@@ -70,6 +73,8 @@ public:
 					error("ERROR reading reply");
 			    ROS_WARN("%s",buffer);
 		    }
+
+				cout << "end callback" <<endl;
 
 	}
 
@@ -86,6 +91,7 @@ int main(int argc, char *argv[]) {
 	// ROS node declaration
 	ros::init(argc, argv, "TCPclient_node_io");
 
+
 	struct sockaddr_in serv_addr;
 	struct hostent *server;
 	portno = 50000;
@@ -94,7 +100,6 @@ int main(int argc, char *argv[]) {
     
 	if (sockfd < 0) 
 		error("ERROR opening socket");
-
 	server = gethostbyname("192.168.0.50");
 
 	bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -103,9 +108,16 @@ int main(int argc, char *argv[]) {
 	(char *)&serv_addr.sin_addr.s_addr,
 	server->h_length);
 	serv_addr.sin_port = htons(portno);
-    
+  
+	cout << "connection Ready" <<endl;
+
 	if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0) 
-		error("ERROR connecting");
+		{
+			error("ERROR connecting");
+			cout << "Connection failed!!" << endl;
+
+		}
+
 
 //	Constructor
 	Listener listener;	

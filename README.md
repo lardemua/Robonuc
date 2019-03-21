@@ -143,7 +143,7 @@ find . -type f -exec sed -i 's/boost\:\:const_pointer_cast/std\:\:const_pointer_
 
 To see the robot on rviz, you should launch:
 ```
-export LC_NUMERIC="en_US.UTF-8"
+export LC_NUMERIC="en_US.UTF-8" or echo 'export LC_NUMERIC="en_US.UTF-8"' >>~/.bashrc
 (if the colors arent good)
 
 roslaunch fanuc_lrmate200id_support test_lrmate200id.launch 

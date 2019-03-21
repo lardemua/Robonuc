@@ -11,8 +11,8 @@
     			<geometry>
     				<mesh filename ="package://r_platform/CAD/robot-1.stl" />
     			</geometry>
-    			<material name ="LightGrey">
-        			<color rgba="0.83 0.83 0.83 1.0"/>
+    			<material name ="black">
+        		<color rgba="0.5 0.5 0.5 1.0"/>
         		</material>
 
     		</visual>
@@ -25,8 +25,8 @@
     			<geometry>
     				<mesh filename ="package://r_platform/CAD/CenaNova-1.stl" />
     			</geometry>
-    			<material name ="LightGrey">
-        			<color rgba="0.83 0.83 0.83 1.0"/>
+    			<material name ="blue">
+        			<color rgba="0 0.5 0.5 1.0"/>
         		</material>
     		</visual>
     	</link>
@@ -37,7 +37,7 @@
     			<geometry>
     				<mesh filename ="package://r_platform/CAD/CenaNovaLaser-1.stl" />
     			</geometry>
-    			<material name ="LightGrey">
+    			<material name ="blue">
         			<color rgba="0.83 0.83 0.83 1.0"/>
         		</material>
     		</visual>
@@ -50,7 +50,7 @@
     			<geometry>
     				<mesh filename ="package://r_platform/CAD/Curva-1.stl" />
     			</geometry>
-    			<material name ="LightGrey">
+    			<material name ="blue">
         			<color rgba="0.83 0.83 0.83 1.0"/>
         		</material>
     		</visual>
@@ -63,7 +63,7 @@
     			<geometry>
     				<mesh filename ="package://r_platform/CAD/Placa-Cima-1.stl" />
     			</geometry>
-    			<material name ="LightGrey">
+    			<material name ="blue">
         			<color rgba="0.83 0.83 0.83 1.0"/>
         		</material>
     		</visual>

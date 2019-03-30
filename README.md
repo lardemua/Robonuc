@@ -193,4 +193,9 @@ cd ..
 
 catkin_make
 ```
+### URDF
+To see total URDF, launch:
 
+```
+roslaunch robonuc_integration display_urdf_total.launch
+```

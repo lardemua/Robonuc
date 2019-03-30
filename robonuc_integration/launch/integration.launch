@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- SensorRs232 -->
+    <include file="$(find bin_picking)/launch/sensorRS232.launch" />
+
+</launch>

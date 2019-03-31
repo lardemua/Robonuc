@@ -2,6 +2,13 @@
 <launch>
 
     <!-- SensorRs232 -->
-    <include file="$(find bin_picking)/launch/sensorRS232.launch" />
+    <!-- <include file="$(find bin_picking)/launch/sensorRS232.launch" /> -->
+    <include file="$(find robonuc_integration)/launch/sensorRS232_v2.launch" />
+
+    <!-- Launch laser_limit for automatic perception  -->
+    <rosparam command="load" file="$(find robonuc_integration)/param/checker_params.yaml"/>
+    <!-- Node to check check_feasibility based on laser_limit -->
+    <node name="check_feasibility" pkg="robonuc_integration" type="check_feasibility" output="screen"/>
+
 
 </launch>

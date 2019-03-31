@@ -1,4 +1,14 @@
-#include "../../bin_picking/include/bin_picking/sensorRS232.h"
+/**
+ * @file sensorRS232_v2.cpp
+ * @author Tiago Tavares (adapt from binpicking by joana M)
+ * @brief 
+ * @version 0.1
+ * @date 2019-03-31
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
+#include "../include/sensorRS232.h"
 
 using namespace std;
 
@@ -38,17 +48,23 @@ int main (int argc, char** argv)
     int  fd;
     vector <float> readings;
 
+    std_msgs::Float32 fix_value; 
+    fix_value.data = 10.1;
+
     fd=OpenPort("/dev/ttyACM0", NULL);
     
     
     while (ros::ok() & fd == -1) 
     {
-        cout << "Error. Could not open port" << endl ; 
+        cout << "Error. Could not open laser port" << endl ;
+        cout << "Publishing a randam value for debug" << endl ;
+        pub_rs232.publish(fix_value); 
+        sleep(1);
         // exit(1); 
     }
 
 
-    while (ros::ok() && counter < 11)
+    while ( ros::ok() )
     {
         // cout << "aqui" << endl;
         std_msgs::Float32 dist; 

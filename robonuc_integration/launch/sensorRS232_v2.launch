@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="sensorRS232_v2" pkg="robonuc_integration" type="sensorRS232_v2" output="screen"/>
+    
+</launch>

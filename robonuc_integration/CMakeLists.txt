@@ -107,7 +107,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robonuc_integration
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -136,7 +136,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/robonuc_integration_node.cpp)
-add_executable(sensorRS232 src/sensorRS232_v2.cpp)
+add_executable(sensorRS232_v2 src/sensorRS232_v2.cpp)
+add_executable(check_feasibility src/check_feasibility.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -152,7 +153,12 @@ add_executable(sensorRS232 src/sensorRS232_v2.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(sensorRS232
+target_link_libraries(sensorRS232_v2
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
+
+target_link_libraries(check_feasibility
   ${catkin_LIBRARIES}
   # ${PCL_LIBRARIES}
 )

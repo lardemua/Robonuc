@@ -49,7 +49,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
-#   FILES
+  # FILES
+  # navi.msg
 #   Message1.msg
 #   Message2.msg
 # )
@@ -61,7 +62,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Service2.srv
 # )
 
-## Generate actions in the 'action' folder
+## Generate actions in the 'action' folderr_platform_generate_messages_cpp
 # add_action_files(
 #   FILES
 #   Action1.action
@@ -107,7 +108,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robonuc_integration
-CATKIN_DEPENDS roscpp rospy std_msgs
+CATKIN_DEPENDS roscpp rospy std_msgs 
 #  DEPENDS system_lib
 )
 
@@ -138,6 +139,8 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/robonuc_integration_node.cpp)
 add_executable(sensorRS232_v2 src/sensorRS232_v2.cpp)
 add_executable(check_feasibility src/check_feasibility.cpp)
+add_executable(integrated_referee src/integrated_referee.cpp)
+
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -159,6 +162,11 @@ target_link_libraries(sensorRS232_v2
 )
 
 target_link_libraries(check_feasibility
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
+
+target_link_libraries(integrated_referee
   ${catkin_LIBRARIES}
   # ${PCL_LIBRARIES}
 )

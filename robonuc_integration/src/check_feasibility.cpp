@@ -1,3 +1,13 @@
+/**
+ * @file check_feasibility.cpp
+ * @author Tiago Tavares (tiagoa.tavares@hotmail.com)
+ * @brief Check the laser values (subscribe /output_laser_sensor ) and publish the action that robot needs to execute (pub on topic /feasibility)
+ * @version 0.1
+ * @date 2019-04-01
+ * 
+ * @copyright Copyright (c) 2019
+ * 
+ */
 #include "ros/ros.h"
 #include <iostream>
 
@@ -27,7 +37,7 @@ class checker // class checker
         //ROS_INFO("I heard: [%d]", msg->data);
         cout << "[check_feasibility] Iam reading:" << msg->data << endl;
 
-        if (msg->data >= laser_limit)
+        if ( (msg->data <= laser_limit) && (msg->data >0.5) )
         {
             ss.str("Platform should move.");
         }

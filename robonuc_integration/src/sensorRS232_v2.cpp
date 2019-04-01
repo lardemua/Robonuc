@@ -49,7 +49,7 @@ int main (int argc, char** argv)
     vector <float> readings;
 
     std_msgs::Float32 fix_value; 
-    fix_value.data = 10.1;
+    fix_value.data = 80.1;
 
     fd=OpenPort("/dev/ttyACM0", NULL);
     

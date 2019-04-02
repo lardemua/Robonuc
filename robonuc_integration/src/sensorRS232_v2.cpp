@@ -52,7 +52,7 @@ int main (int argc, char** argv)
     vector <float> readings;
 
     std_msgs::Float32 fix_value; 
-    fix_value.data = 80.1;
+    fix_value.data = 511.8;
 
     fd=OpenPort("/dev/ttyACM2", NULL);
     
@@ -61,7 +61,7 @@ int main (int argc, char** argv)
     {
         cout << "Error. Could not open laser port" << endl ;
         cout << "Publishing a randam value for debug" << endl ;
-        // pub_rs232.publish(fix_value); 
+        pub_rs232.publish(fix_value); 
         sleep(1);
         // exit(1); 
     }

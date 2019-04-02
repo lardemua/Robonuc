@@ -12,11 +12,13 @@
 #include "ros/ros.h"
 #include <iostream>
 
-#include "std_msgs/String.h"
+#include "std_msgs/String.h" // for /feasibility
 
-#include <sensor_msgs/Joy.h>
+#include <sensor_msgs/Joy.h> //for joysitck
 
-#include <r_platform/navi.h>
+#include <r_platform/navi.h> //for /navi_commands
+
+#include "std_msgs/Int8.h" //for /referee_mode
 
 using namespace std;
 
@@ -27,12 +29,16 @@ class checker // class checker
     std::stringstream ss;
     r_platform::navi vel_msg;
 
+    std_msgs::Int8 referee_mode_msg;
+
     bool robot_allowed = false;
 
     int linear_, angular_;    // id of angular and linear axis (position in the array)
     float l_scale_, a_scale_; // linear and angular scale
 
-    ros::Publisher vel_pub=n.advertise<r_platform::navi>("/navi_commands", 20);
+    ros::Publisher vel_pub = n.advertise<r_platform::navi>("/navi_commands", 20);
+
+    ros::Publisher referee_pub = n.advertise<std_msgs::Int8>("/referee_mode", 4);
 
     checker() : linear_(1),
                 angular_(3),
@@ -40,6 +46,8 @@ class checker // class checker
                 a_scale_(0.025)
     {
         ss.str("");
+
+        referee_mode_msg.data=-1;
     }
 
     void chatterCallback(const std_msgs::String::ConstPtr &msg)
@@ -89,6 +97,7 @@ class checker // class checker
 
         //     vel_msg.linear_vel = l_scale_ * joy->axes[linear_];
         //     vel_msg.angular_vel = a_scale_ * joy->axes[angular_];
+        // robot_allowed = true;
 
         if (robot_allowed == true && ss.str() == "Platform should move.")
         {
@@ -98,6 +107,9 @@ class checker // class checker
             cout << "[integrated_referee]PLAT will be moved!" << endl;
             vel_pub.publish(vel_msg);
 
+            referee_mode_msg.data = 1; //auto_picking_mode
+
+            referee_pub.publish(referee_mode_msg);
         }
         else
         {
@@ -105,8 +117,6 @@ class checker // class checker
             cout << "[integrated_referee]PLAT will NOT be moved!" << endl;
             cout << "ss=" << ss.str() << endl;
         }
-
-        
     }
 
   private:

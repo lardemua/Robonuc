@@ -76,14 +76,14 @@ int main(int argc, char **argv)
 
     ros::Publisher chatter_pub = n.advertise<std_msgs::String>("/feasibility", 100);
 
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(2000);
 
     while (ros::ok())
     {
         my_checker.send_msg.data = my_checker.ss.str();
         // ROS_INFO("%s", msg.data.c_str());
 
-        cout << "[check_feasibility] Iam pub:" << my_checker.send_msg << endl;
+        // cout << "[check_feasibility] Iam pub:" << my_checker.send_msg << endl;
         chatter_pub.publish(my_checker.send_msg);
 
         ros::spinOnce();

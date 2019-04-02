@@ -34,7 +34,7 @@ int ReadPortUntilChar(int fd)
         sprintf(distance_laser,"%s%c",distance_laser,ch);
         // cout << "ch=" << ch<< endl ;
     } while( ch != '\n');       //Reads until a paragraph is found
-     cout << "dist_laser=" << distance_laser<< endl ;
+    //  cout << "dist_laser=" << distance_laser<< endl ;
      
     return 0;
 }
@@ -66,7 +66,7 @@ int main (int argc, char** argv)
         // exit(1); 
     }
 
-    ros::Rate loop_rate(50);
+    ros::Rate loop_rate(200);
 
     while ( ros::ok() )
     {

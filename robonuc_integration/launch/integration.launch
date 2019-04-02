@@ -24,6 +24,11 @@
     <!-- Launch the hybrid_launch -->
     <!-- <include file="$(find r_platform)/launch/robonuc_hybrid.launch" /> -->
 
+    <node pkg="r_platform" type="r_hybrid" name="r_hybrid" />
+
+	<node pkg="r_platform" type="decompose_vel" name="decompose_vel" />
+	<node pkg="r_platform" type="r_client_node" name="r_client_node" />
+
 
 
 </launch>

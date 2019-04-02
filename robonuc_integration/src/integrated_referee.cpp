@@ -38,7 +38,7 @@ class checker // class checker
 
     ros::Publisher vel_pub = n.advertise<r_platform::navi>("/navi_commands", 20);
 
-    ros::Publisher referee_pub = n.advertise<std_msgs::Int8>("/referee_mode", 4);
+    ros::Publisher referee_pub = n.advertise<std_msgs::Int8>("/referee_mode", 10);
 
     checker() : linear_(1),
                 angular_(3),
@@ -55,7 +55,7 @@ class checker // class checker
         //ROS_INFO("I heard: [%d]", msg->data);
         cout << "[integrated_Referee] Iam reading:" << msg->data << endl;
         ss.str(msg->data);
-        cout << "ss=" << ss.str() << endl;
+        // cout << "ss=" << ss.str() << endl;
     }
 
     void joyCallback(const sensor_msgs::Joy::ConstPtr &joy)
@@ -108,8 +108,6 @@ class checker // class checker
             vel_pub.publish(vel_msg);
 
             referee_mode_msg.data = 1; //auto_picking_mode
-
-            referee_pub.publish(referee_mode_msg);
         }
         else
         {
@@ -117,6 +115,9 @@ class checker // class checker
             cout << "[integrated_referee]PLAT will NOT be moved!" << endl;
             cout << "ss=" << ss.str() << endl;
         }
+
+        referee_pub.publish(referee_mode_msg);
+
     }
 
   private:
@@ -150,7 +151,7 @@ int main(int argc, char **argv)
 
     ros::Subscriber joy_sub_ = n.subscribe<sensor_msgs::Joy>("/joy", 20, &checker::joyCallback, &my_checker);
 
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(200);
 
     while (ros::ok())
     {

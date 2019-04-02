@@ -37,7 +37,7 @@ class checker // class checker
         //ROS_INFO("I heard: [%d]", msg->data);
         cout << "[check_feasibility] Iam reading:" << msg->data << endl;
 
-        if ( (msg->data <= laser_limit) && (msg->data >0.5) )
+        if ( (msg->data >= laser_limit) && (msg->data >0) )
         {
             ss.str("Platform should move.");
         }

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-char distance_laser[10];
+char distance_laser[15];
 float counter = 0.0;
 
 /**
@@ -32,7 +32,10 @@ int ReadPortUntilChar(int fd)
         n=read( fd, &ch, 1);
         if( n == -1 || n == 0 ) continue;   //perror("Err:");
         sprintf(distance_laser,"%s%c",distance_laser,ch);
+        // cout << "ch=" << ch<< endl ;
     } while( ch != '\n');       //Reads until a paragraph is found
+     cout << "dist_laser=" << distance_laser<< endl ;
+     
     return 0;
 }
 
@@ -42,7 +45,7 @@ int main (int argc, char** argv)
     ros::init (argc, argv, "bin_picking_sensorRS232");
 
     ros::NodeHandle nh;
-    ros::Publisher pub_rs232 = nh.advertise<std_msgs::Float32>("/output_laser_sensor", 1000);
+    ros::Publisher pub_rs232 = nh.advertise<std_msgs::Float32>("/output_laser_sensor", 200);
     // ros::Rate loop_rate(15);
 
     int  fd;
@@ -51,50 +54,59 @@ int main (int argc, char** argv)
     std_msgs::Float32 fix_value; 
     fix_value.data = 80.1;
 
-    fd=OpenPort("/dev/ttyACM0", NULL);
+    fd=OpenPort("/dev/ttyACM2", NULL);
     
     
     while (ros::ok() & fd == -1) 
     {
         cout << "Error. Could not open laser port" << endl ;
         cout << "Publishing a randam value for debug" << endl ;
-        pub_rs232.publish(fix_value); 
+        // pub_rs232.publish(fix_value); 
         sleep(1);
         // exit(1); 
     }
 
+    ros::Rate loop_rate(50);
 
     while ( ros::ok() )
     {
         // cout << "aqui" << endl;
+        // fd=OpenPort("/dev/ttyACM0", NULL);
+
         std_msgs::Float32 dist; 
         ReadPortUntilChar(fd);                  //Reads the distance given by the Arduino UNO
         dist.data = atof(distance_laser);
-        if (dist.data > 100.0 && dist.data < 600.0)
-        {
-            cout << "Distance=" << dist.data << endl; 
+
+        // cout << "Distance=" << dist.data << endl; 
+        
+        pub_rs232.publish(dist);
+        // if (dist.data > 100.0 && dist.data < 600.0)
+        // {
+        //     cout << "Distance=" << dist.data << endl; 
             
-            if (counter>0) {
-             readings.push_back(dist.data);
-             }
-            counter++;
-        }
+        //     if (counter>0) {
+        //      readings.push_back(dist.data);
+        //      }
+        //     counter++;
+        // }
         distance_laser[0] = '\0';
-        // loop_rate.sleep();
+        loop_rate.sleep();
+
+        // close(fd);
     }
     
-    float average = accumulate(readings.begin(), readings.end(), 0.0)/readings.size();          
+    // float average = accumulate(readings.begin(), readings.end(), 0.0)/readings.size();          
 
-    cout << "The size is: " << readings.size() << endl; 
-    cout << "The average is: " << average << endl; 
-    std_msgs::Float32 dist_average; 
-    dist_average.data = average;
+    // cout << "The size is: " << readings.size() << endl; 
+    // cout << "The average is: " << average << endl; 
+    // std_msgs::Float32 dist_average; 
+    // dist_average.data = average;
     close(fd);
-    while (ros::ok())
-    {
-        pub_rs232.publish(dist_average);
-        // cout << "Output Laser just published" << endl;
-    }
+    // while (ros::ok())
+    // {
+    //     // pub_rs232.publish(dist_average);
+    //     // cout << "Output Laser just published" << endl;
+    // }
 
     return 0;
 }

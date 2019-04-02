@@ -15,7 +15,8 @@
 #include "std_msgs/String.h"
 
 #include <sensor_msgs/Joy.h>
-// #include <r_platform/navi.h>
+
+#include <r_platform/navi.h>
 
 using namespace std;
 
@@ -24,13 +25,14 @@ class checker // class checker
   public:
     ros::NodeHandle n;
     std::stringstream ss;
-    // r_platform::navi vel_msg;
+    r_platform::navi vel_msg;
 
     bool robot_allowed = false;
 
     int linear_, angular_;    // id of angular and linear axis (position in the array)
     float l_scale_, a_scale_; // linear and angular scale
-    ros::Publisher vel_pub_;
+
+    ros::Publisher vel_pub=n.advertise<r_platform::navi>("/navi_commands", 20);
 
     checker() : linear_(1),
                 angular_(3),
@@ -90,19 +92,21 @@ class checker // class checker
 
         if (robot_allowed == true && ss.str() == "Platform should move.")
         {
-            // vel_msg.linear_vel = 0;
-            // vel_msg.angular_vel = 0;
-            // vel_msg.robot = 0;
-            cout << "PLAT will be moved!" << endl;
+            vel_msg.linear_vel = 0.025;
+            vel_msg.angular_vel = 0;
+            //vel_msg.robot = 0; //este campo nao interessa para o decompose_vel (acho eu)
+            cout << "[integrated_referee]PLAT will be moved!" << endl;
+            vel_pub.publish(vel_msg);
 
         }
         else
         {
-            cout << "PLAT will NOT be moved!" << endl;
-            // vel_msg.linear_vel = 0;
-            // vel_msg.angular_vel = 0;
-            // vel_msg.robot = 0;
+
+            cout << "[integrated_referee]PLAT will NOT be moved!" << endl;
+            cout << "ss=" << ss.str() << endl;
         }
+
+        
     }
 
   private:
@@ -146,7 +150,7 @@ int main(int argc, char **argv)
         // cout << "[check_feasibility] Iam pub:" << my_checker.send_msg << endl;
         // chatter_pub.publish(my_checker.send_msg);
 
-        cout << "robot_allowed=" << my_checker.robot_allowed << endl;
+        cout << "[integrated_referee]robot_allowed=" << my_checker.robot_allowed << endl;
         my_checker.action_Callback();
 
         ros::spinOnce();

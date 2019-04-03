@@ -26,9 +26,6 @@
 #include <vector>
 #include <visualization_msgs/Marker.h>
 
-#include "std_msgs/Int8.h" //for /referee_mode
-#include <iostream>
-using namespace std;
 //=======================================================================================
 //===================================== CLASS
 //===========================================
@@ -39,20 +36,13 @@ bool robot_allowed = true;
 class TeleopRobonuc
 {
 public:
-
   TeleopRobonuc();
-
-  std_msgs::Int8 referee_mode_msg;
-
-  int referee_mode;
 
   const r_platform::navi &vel_msg() const;
 
   void publish_vel_msg();
 
   void modeDecider(void);
-
-  void chatterCallback(const std_msgs::Int8::ConstPtr &msg);
 
 private:
   void autoNav(const geometry_msgs::Twist::ConstPtr &vel);
@@ -99,7 +89,6 @@ private:
 TeleopRobonuc::TeleopRobonuc()
     : linear_(1), angular_(3), l_scale_(0.025), a_scale_(0.025)
 {
-  referee_mode= -1;
 
   vel_pub_ = nh_.advertise<r_platform::navi>("navi_commands", 20);
 
@@ -513,15 +502,7 @@ void TeleopRobonuc::modeDecider(void)
     joy_l_vel_ = vel_msg_.linear_vel / 5;
   }
 
-  if (mode_=2 && referee_mode==1)
-  {
-    marker.color.r = 0.0;
-    marker.color.g = 1.0;
-    marker.color.b = 0.0;
-
-    marker.text = "AUTOMATIC-picking";
-  }
-  else if (mode_ == 2) // automatic
+  if (mode_ == 2) // automatic
   {
     if (vel_msg_.linear_vel != 0 && auto_l_vel_ == 0)
     {
@@ -614,17 +595,6 @@ void TeleopRobonuc::modeDecider(void)
   marker.lifetime = ros::Duration(3);
   vis_pub_.publish(marker);
 }
-
-void TeleopRobonuc::chatterCallback(const std_msgs::Int8::ConstPtr &msg)
-{
-
-  referee_mode_msg = (*msg);
-  // cout << "referee_mode_msg=" << referee_mode_msg.data << endl;
-  
-  referee_mode=referee_mode_msg.data;
-
-  ROS_INFO("%s%d", "[Hybrid]referee_mode_msg=",referee_mode );
-}
 //=======================================================================================
 //====================================== MAIN
 //===========================================
@@ -634,13 +604,10 @@ int main(int argc, char **argv)
 {
 
   ros::init(argc, argv, "teleop_robonuc");
-  ros::NodeHandle n;
 
   TeleopRobonuc teleop_robonuc;
 
-  ros::Subscriber referee_sub = n.subscribe<std_msgs::Int8>("/referee_mode", 10, &TeleopRobonuc::chatterCallback, &teleop_robonuc);
-
-  ros::Rate loop_rate(100);
+  ros::Rate loop_rate(20);
 
   while (ros::ok())
   {

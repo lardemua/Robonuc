@@ -45,7 +45,7 @@ int main (int argc, char** argv)
     ros::init (argc, argv, "bin_picking_sensorRS232");
 
     ros::NodeHandle nh;
-    ros::Publisher pub_rs232 = nh.advertise<std_msgs::Float32>("/output_laser_sensor", 200);
+    ros::Publisher pub_rs232 = nh.advertise<std_msgs::Float32>("/output_laser_sensor_2", 200);
     // ros::Rate loop_rate(15);
 
     int  fd;

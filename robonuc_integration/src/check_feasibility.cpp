@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     //class checker
     checker my_checker;
 
-    ros::Subscriber sub = n.subscribe("/output_laser_sensor", 100, &checker::chatterCallback, &my_checker);
+    ros::Subscriber sub = n.subscribe("/output_laser_sensor_2", 100, &checker::chatterCallback, &my_checker);
 
     ros::Publisher chatter_pub = n.advertise<std_msgs::String>("/feasibility", 100);
 

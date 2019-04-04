@@ -141,6 +141,7 @@ include_directories(
 add_executable(sensorRS232_v2 src/sensorRS232_v2.cpp)
 add_executable(check_feasibility src/check_feasibility.cpp)
 add_executable(integrated_referee src/integrated_referee.cpp)
+add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -172,6 +173,10 @@ target_link_libraries(integrated_referee
   # ${PCL_LIBRARIES}
 )
 
+target_link_libraries(robonuc_control_workspace
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
 
 #############
 ## Install ##

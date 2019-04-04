@@ -97,7 +97,8 @@ class checker // class checker
 
         //     vel_msg.linear_vel = l_scale_ * joy->axes[linear_];
         //     vel_msg.angular_vel = a_scale_ * joy->axes[angular_];
-        // robot_allowed = true;
+        
+        // robot_allowed = true; //comentar!
 
         if (robot_allowed == true && ss.str() == "Platform should move.")
         {

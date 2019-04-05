@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robonuc_integration)
+project(action_srv)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,8 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  sensor_msgs
-  r_platform
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,20 +49,20 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
-  # FILES
-  # navi.msg
+#   FILES
 #   Message1.msg
 #   Message2.msg
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+add_service_files(
+  FILES
+  Robot_status.srv
 #   Service1.srv
 #   Service2.srv
-# )
+)
 
-## Generate actions in the 'action' folderr_platform_generate_messages_cpp
+## Generate actions in the 'action' folder
 # add_action_files(
 #   FILES
 #   Action1.action
@@ -74,7 +73,6 @@ find_package(catkin REQUIRED COMPONENTS
 generate_messages(
   DEPENDENCIES
   std_msgs
-  sensor_msgs
 )
 
 ################################################
@@ -108,8 +106,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES robonuc_integration
-CATKIN_DEPENDS roscpp rospy std_msgs r_platform
+#  LIBRARIES action_srv
+ CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 #  DEPENDS system_lib
 )
 
@@ -126,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robonuc_integration.cpp
+#   src/${PROJECT_NAME}/action_srv.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -137,12 +135,8 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robonuc_integration_node.cpp)
-add_executable(sensorRS232_v2 src/sensorRS232_v2.cpp)
-add_executable(check_feasibility src/check_feasibility.cpp)
-add_executable(integrated_referee src/integrated_referee.cpp)
-# add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
-
+# add_executable(${PROJECT_NAME}_node src/action_srv_node.cpp)
+add_executable(robonuc_control_workspace_service src/robonuc_control_workspace.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,28 +149,9 @@ add_executable(integrated_referee src/integrated_referee.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
-target_link_libraries(sensorRS232_v2
+target_link_libraries(robonuc_control_workspace_service
   ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
 )
-
-target_link_libraries(check_feasibility
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
-
-target_link_libraries(integrated_referee
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
-
-# target_link_libraries(robonuc_control_workspace
-#   ${catkin_LIBRARIES}
-#   # ${PCL_LIBRARIES}
-# )
 
 #############
 ## Install ##
@@ -218,7 +193,7 @@ target_link_libraries(integrated_referee
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robonuc_integration.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_action_srv.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

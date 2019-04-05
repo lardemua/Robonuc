@@ -1,0 +1,43 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/tiago/catkin_ws/devel/include",
+                "/opt/ros/melodic/include",
+                "/home/tiago/catkin_ws/src/aruco_ros/aruco/include",
+                "/home/tiago/catkin_ws/src/aruco_ros/aruco_ros/include",
+                "/home/tiago/catkin_ws/src/Bin-picking/bin_picking/include",
+                "/home/tiago/catkin_ws/src/driver_common/driver_base/include",
+                "/home/tiago/catkin_ws/src/Bin-picking/fanuc_control/include",
+                "/home/tiago/catkin_ws/src/fanuc/fanuc_driver/include",
+                "/home/tiago/catkin_ws/src/fiducials/fiducial_slam/include",
+                "/home/tiago/catkin_ws/src/hector_slam/hector_geotiff/include",
+                "/home/tiago/catkin_ws/src/hector_slam/hector_map_tools/include",
+                "/home/tiago/catkin_ws/src/hector_slam/hector_mapping/include",
+                "/home/tiago/catkin_ws/src/hector_slam/hector_marker_drawing/include",
+                "/home/tiago/catkin_ws/src/hokuyo_node/include",
+                "/home/tiago/catkin_ws/src/industrial_core/industrial_robot_client/include",
+                "/home/tiago/catkin_ws/src/industrial_core/industrial_trajectory_filters/include",
+                "/home/tiago/catkin_ws/src/industrial_core/industrial_utils/include",
+                "/home/tiago/catkin_ws/src/robonuc/include",
+                "/home/tiago/catkin_ws/src/robonuc_action/include",
+                "/home/tiago/catkin_ws/src/robonuc_integration/include",
+                "/home/tiago/catkin_ws/src/industrial_core/simple_message/include",
+                "/home/tiago/catkin_ws/src/driver_common/timestamp_tools/include",
+                "/home/tiago/catkin_ws/src/usb_cam/include",
+                "/home/tiago/catkin_ws/src/vision_visp/visp_bridge/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

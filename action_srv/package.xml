@@ -61,6 +61,10 @@
 
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
+	
+  <build_depend>moveit_msgs</build_depend>
+  <build_export_depend>moveit_msgs</build_export_depend>
+  <exec_depend>moveit_msgs</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

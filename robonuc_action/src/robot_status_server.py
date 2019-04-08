@@ -2,7 +2,11 @@
 import rospy
 
 import actionlib
+<<<<<<< HEAD
 #changes
+=======
+
+>>>>>>> 5b1eb5d9373d85e2cb20a49ecffaf8452a5d353b
 import actionlib_tutorials.msg
 
 class FibonacciAction(object):

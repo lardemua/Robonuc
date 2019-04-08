@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- start rviz -->
+    <node pkg="rviz" type="rviz" name="my_rviz"/> 
+    <include file="$(find bin_picking)/launch/kinect.launch" />
+
+</launch>

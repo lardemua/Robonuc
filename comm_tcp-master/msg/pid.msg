@@ -1,0 +1,4 @@
+float64 setpoint1
+float64 encoder_read1
+float64 setpoint2
+float64 encoder_read2

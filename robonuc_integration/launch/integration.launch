@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="mode" default="true"/>
+
+    <group if="$(arg mode)">
+
+        <!-- Launch the hybrid_launch -->
+        <include file="$(find r_platform)/launch/robonuc_hybrid.launch" />
+
+
+    </group>
+
+    <group unless="$(arg mode)">
+        <!-- joy node -->
+        <node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+            <param name="dev" type="string" value="/dev/input/js0" />
+            <param name="deadzone" value="0.12" />
+            <param name="autorepeat_rate" value="20" />
+        </node>
+
+        <node pkg="r_platform" type="r_hybrid" name="r_hybrid" />
+
+        <node pkg="r_platform" type="decompose_vel" name="decompose_vel" />
+        <node pkg="r_platform" type="r_client_node" name="r_client_node" />
+
+    </group>
+
+
+    <!-- SensorRs232 -->
+    <!-- <include file="$(find bin_picking)/launch/sensorRS232.launch" /> -->
+    <include file="$(find robonuc_integration)/launch/sensorRS232_v2.launch" />
+
+    <!-- Launch laser_limit for automatic perception  -->
+    <rosparam command="load" file="$(find robonuc_integration)/param/checker_params.yaml"/>
+    <!-- Node to check check_feasibility based on laser_limit -->
+    <node name="check_feasibility" pkg="robonuc_integration" type="check_feasibility" output="screen"/>
+
+    <!-- Launch the referee! Decides to move or to stop platform, and execute or not B-picking  -->
+    <node name="integrated_referee" pkg="robonuc_integration" type="integrated_referee" output="screen"/>
+
+
+    <!-- Launch the robonuc_control_workspace : security motions .... -->
+    <node name="robonuc_control_workspace" pkg="robonuc_integration" type="robonuc_control_workspace" output="screen"/>
+
+
+</launch>

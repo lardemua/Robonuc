@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <!-- Node to control I/Os -->
-    <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" />
-
-</launch>

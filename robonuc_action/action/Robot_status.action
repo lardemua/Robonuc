@@ -1,8 +1,8 @@
 #goal definition
-int32 mode
+int32 order
 ---
 #result definition
-bool result
+int32[] sequence
 ---
 #feedback
-
+int32[] sequence

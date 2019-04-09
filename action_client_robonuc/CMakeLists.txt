@@ -11,6 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
+  actionlib_msgs
+  robonuc_action
+  actionlib_tutorials
 )
 
 ## System dependencies are found with CMake's conventions
@@ -134,6 +138,17 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/action_client_robonuc_node.cpp)
+add_executable(action_client src/action_client.cpp)
+
+target_link_libraries( 
+  action_client
+  ${catkin_LIBRARIES}
+)
+
+add_dependencies(
+  action_client
+  ${robonuc_action_EXPORTED_TARGETS}
+)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the

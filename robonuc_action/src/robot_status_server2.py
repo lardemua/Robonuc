@@ -31,6 +31,8 @@
 
 import rospy
 
+import time #sleep
+
 from actionlib.action_server import ActionServer
 #from actionlib.msg import TestAction, TestFeedback, TestResult
 
@@ -70,7 +72,7 @@ class RefServer (ActionServer):
 
         if goal.mode == 1:
             gh.set_accepted()
-
+            time.sleep(5)
             #gh.set_succeeded(None, "The ref server has succeeded")
             
         elif goal.mode == 2:

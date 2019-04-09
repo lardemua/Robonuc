@@ -5,7 +5,9 @@ import actionlib
 #changes
 import actionlib_tutorials.msg
 
-class FibonacciAction(object):
+import robonuc_action.msg
+
+class MyAction(object):
     # create messages that are used to publish feedback/result
     _feedback = actionlib_tutorials.msg.FibonacciFeedback()
     _result = actionlib_tutorials.msg.FibonacciResult()
@@ -49,5 +51,5 @@ class FibonacciAction(object):
         
 if __name__ == '__main__':
     rospy.init_node('RobotStatusAction')
-    server = FibonacciAction(rospy.get_name())
+    server = MyAction(rospy.get_name())
     rospy.spin()

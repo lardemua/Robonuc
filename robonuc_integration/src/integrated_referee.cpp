@@ -20,7 +20,15 @@
 
 #include "std_msgs/Int8.h" //for /referee_mode
 
+//for action server --> pkg=robonuc_action
+#include <actionlib/client/simple_action_client.h>
+#include <actionlib/client/terminal_state.h>
+#include <robonuc_action/Robot_statusAction.h>
+
+
 using namespace std;
+
+typedef actionlib::SimpleActionClient<robonuc_action::Robot_statusAction> Client;
 
 class checker // class checker
 {
@@ -33,6 +41,9 @@ class checker // class checker
 
     bool robot_allowed = false;
 
+    bool get_action = false; //variable that change when robot should stop
+    robonuc_action::Robot_statusGoal goal;
+
     int linear_, angular_;    // id of angular and linear axis (position in the array)
     float l_scale_, a_scale_; // linear and angular scale
 
@@ -43,11 +54,16 @@ class checker // class checker
     checker() : linear_(1),
                 angular_(3),
                 l_scale_(0.025),
-                a_scale_(0.025)
+                a_scale_(0.025),
+                ac("RobotStatusAction", true)
     {
         ss.str("");
 
         referee_mode_msg.data=-1;
+
+        ROS_INFO("Waiting for action server to start.");
+        ac.waitForServer();
+        ROS_INFO("Action server started, can send goal.");
     }
 
     void chatterCallback(const std_msgs::String::ConstPtr &msg)
@@ -81,6 +97,7 @@ class checker // class checker
             if (joy->buttons[0] == 1)
             {
                 robot_allowed = true;
+                get_action = true;
                 ROS_INFO("Button A pressed! Robot=%d", robot_allowed);
             }
         }
@@ -99,6 +116,33 @@ class checker // class checker
         //     vel_msg.angular_vel = a_scale_ * joy->axes[angular_];
         
         // robot_allowed = true; //comentar!
+        if (get_action)
+        {
+            goal.mode = 2;
+            ac.sendGoal(goal);
+            //wait for the action to return
+            bool finished_before_timeout = ac.waitForResult(ros::Duration(15.0));
+
+            if (finished_before_timeout)
+            {
+                robonuc_action::Robot_statusResultConstPtr myresult = ac.getResult();
+                if( myresult->result== true)
+                {
+                    robot_allowed= true;
+                }
+                else
+                {
+                    robot_allowed= false;
+                }
+                
+            }
+            else
+            {
+                robot_allowed= false;
+            }
+        }
+            
+
 
         if (robot_allowed == true && ss.str() == "Platform should move.")
         {
@@ -109,12 +153,22 @@ class checker // class checker
             vel_pub.publish(vel_msg);
 
             referee_mode_msg.data = 1; //auto_picking_mode
+
+            get_action=false;
+        }
+        else if (ss.str() != "Platform should move.") 
+        {
+            goal.mode = 4;
+            ac.sendGoal(goal);
+
+            bool finished_before_timeout = ac.waitForResult(ros::Duration(15.0));
+            robot_allowed = false;
         }
         else
         {
-
             cout << "[integrated_referee]PLAT will NOT be moved!" << endl;
             cout << "ss=" << ss.str() << endl;
+            
         }
 
         referee_pub.publish(referee_mode_msg);
@@ -122,6 +176,7 @@ class checker // class checker
     }
 
   private:
+    Client ac;
 };
 
 int main(int argc, char **argv)

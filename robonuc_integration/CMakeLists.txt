@@ -13,6 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   r_platform
+  message_generation
+  actionlib_msgs
+  robonuc_action
 )
 
 ## System dependencies are found with CMake's conventions
@@ -173,6 +176,10 @@ target_link_libraries(integrated_referee
   # ${PCL_LIBRARIES}
 )
 
+add_dependencies(
+  integrated_referee
+  ${robonuc_action_EXPORTED_TARGETS}
+)
 # target_link_libraries(robonuc_control_workspace
 #   ${catkin_LIBRARIES}
 #   # ${PCL_LIBRARIES}

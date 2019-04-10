@@ -40,7 +40,7 @@
 
 
     <!-- Launch the robonuc_control_workspace : security motions .... -->
-    <node name="robonuc_control_workspace" pkg="robonuc_integration" type="robonuc_control_workspace" output="screen"/>
+    <!-- <node name="robonuc_control_workspace" pkg="robonuc_integration" type="robonuc_control_workspace" output="screen"/> -->
 
 
 </launch>

@@ -4,6 +4,7 @@
 //#include <actionlib_tutorials/FibonacciAction.h>
 
 #include <robonuc_action/Robot_statusAction.h>
+#include <iostream> 
 
 using namespace robonuc_action;
 typedef actionlib::SimpleActionClient<robonuc_action::Robot_statusAction> Client;
@@ -40,7 +41,6 @@ class MyNode
             Robot_statusResultConstPtr myresult = ac.getResult();
 
             ROS_INFO("Action finished, with result: %d", myresult->result);
-
         }
         else
             ROS_INFO("Action did not finish before the time out.");
@@ -51,7 +51,7 @@ class MyNode
     {
         ROS_INFO("Finished in state [%s]", state.toString().c_str());
         // ROS_INFO("Answer: %d", result);
-        //ros::shutdown();
+        ros::shutdown();
     }
 
   private:
@@ -67,7 +67,11 @@ int main(int argc, char **argv)
     //actionlib::SimpleActionClient<actionlib_tutorials::FibonacciAction> ac("fibonacci", true);
 
     MyNode my_node;
-    my_node.doStuff(1);
+    std::cout << "Enter a number: "; 
+    int a; // declare one variable 
+    std::cin >> a; 
+
+    my_node.doStuff(a);
     ros::spin();
 
     //actionlib::SimpleActionClient<robonuc_action::Robot_statusAction> ac("RobotStatusAction", true); //server name , e vaiavel booleana spin a thread

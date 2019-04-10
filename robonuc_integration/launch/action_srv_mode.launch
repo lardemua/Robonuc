@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+<!-- moveit lancuh and robot control -->
+<include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
+
+<!-- action serv for robot status/mode -->
+<node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
+
+</launch>

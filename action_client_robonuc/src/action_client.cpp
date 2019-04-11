@@ -16,7 +16,7 @@ class MyNode
     {
         ROS_INFO("Waiting for action server to start.");
         ac.waitForServer();
-        ROS_INFO("Action server started, sending goal.");
+        ROS_INFO("Action server started, can send goal.");
     }
 
     void doStuff(int order)

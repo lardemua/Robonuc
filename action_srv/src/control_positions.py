@@ -95,19 +95,19 @@ group = moveit_commander.MoveGroupCommander("manipulator")
 
 joint_values = group.get_current_joint_values() #incialize joint_values
 
-# print "============ Joint values: ", joint_values
-group.clear_pose_targets()
+print "============ Joint values: ", joint_values
+#group.clear_pose_targets()
 
 # joint_values = mode_4(joint_values)
 
-joint_values = mode_2(joint_values)
+#joint_values = mode_2(joint_values)
 
 
-group.set_joint_value_target(joint_values)
+#group.set_joint_value_target(joint_values)
 
 # plan2 = group.plan()
 
-group.go(wait=True)
+#group.go(wait=True)
 
 
 # rate = rospy.Rate(10) # 10hz

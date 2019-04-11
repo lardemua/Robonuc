@@ -140,6 +140,7 @@ include_directories(
 
 #comentei
 #add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
+add_executable(GetPlatformOrientation src/GetPlatformOrientation.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -155,6 +156,15 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(GetPlatformOrientation
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
+
+add_dependencies(
+  GetPlatformOrientation
+  ${actionlib_tutorials_EXPORTED_TARGETS}
+)
 
 #comentei
 #target_link_libraries(robonuc_control_workspace ${catkin_LIBRARIES} )

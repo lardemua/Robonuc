@@ -10,10 +10,5 @@
     </include>
   </group>
 
-  <!-- Kinect Drivers -->
-  <!-- <include file="$(find bin_picking)/launch/kinect.launch" /> -->
-
-  <!-- Node to control I/Os -->
-  <!-- <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" /> -->
 
 </launch>

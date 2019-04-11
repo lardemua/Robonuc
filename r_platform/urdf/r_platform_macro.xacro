@@ -131,7 +131,7 @@
                 </geometry>
             </collision>
         </link>
-        <joint name="base_Rwheel" type="continuous">
+        <joint name="base_Rwheel" type="fixed">
             <origin xyz="0.62 -0.03 0.5" rpy="0 0 0" />
             <parent link="plataform_base_link" />
             <child link="Rwheel" />
@@ -159,7 +159,7 @@
                 </geometry>
             </collision>
         </link>
-        <joint name="base_Lwheel" type="continuous">
+        <joint name="base_Lwheel" type="fixed">
             <origin xyz="0.62 -0.03 -0.03" rpy="0 0 1.1753" />
             <parent link="plataform_base_link" />
             <child link="Lwheel" />

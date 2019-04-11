@@ -158,7 +158,7 @@ class checker // class checker
         }
         else if (ss.str() != "Platform should move.") 
         {
-            goal.mode = 4;
+            goal.mode = 3;
             ac.sendGoal(goal);
 
             bool finished_before_timeout = ac.waitForResult(ros::Duration(15.0));

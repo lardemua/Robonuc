@@ -4,81 +4,174 @@
 // #include <actionlib_tutorials/FibonacciAction.h>
 #include <robonuc_action/Robot_statusAction.h>
 
+#include <tf/transform_broadcaster.h>
+#include <tf/transform_listener.h>
+#include <tf/transform_datatypes.h>
 
-class FibonacciAction
+//#include "fiducial_msgs/Fiducial.h"
+//#include "fiducial_msgs/FiducialArray.h"
+//#include "fiducial_msgs/FiducialTransform.h"
+#include "fiducial_msgs/FiducialTransformArray.h"
+
+#include <r_platform/navi.h> //for /navi_commands
+
+class OrientationAction
 {
-  protected:
+  public:
     ros::NodeHandle nh_;
     actionlib::SimpleActionServer<robonuc_action::Robot_statusAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
     std::string action_name_;
 
     // create messages that are used to published feedback/result
-    // actionlib_tutorials::FibonacciFeedback feedback_;
-    // actionlib_tutorials::FibonacciResult result_;
-  public:
-    FibonacciAction(std::string name) : as_(nh_, name, boost::bind(&FibonacciAction::executeCB, this, _1), false),
-                                        action_name_(name)
+    robonuc_action::Robot_statusFeedback feedback_;
+    robonuc_action::Robot_statusResult result_;
+
+    tf::TransformBroadcaster br;
+    tf::TransformListener listener;
+
+    fiducial_msgs::FiducialTransformArray fta;
+    ros::Subscriber transform_sub;
+
+    tf::Transform baselink_T_fobject;
+    tf::Transform camera_T_fobject;
+    tf::StampedTransform baselink_T_camera;
+
+    r_platform::navi vel_msg;
+
+    OrientationAction(std::string name) : as_(nh_, name, boost::bind(&OrientationAction::executeCB, this, _1), false),
+                                          action_name_(name)
     {
+        transform_sub = nh_.subscribe("/fiducial_transforms", 1,
+                                      &OrientationAction::fiducialtransformCB, this);
+
+        ros::Publisher vel_pub = nh_.advertise<r_platform::navi>("/navi_commands", 20);
+
         as_.start();
     }
 
-    ~FibonacciAction(void)
+    ~OrientationAction(void)
     {
     }
 
-    // FibonacciAction()
-    // {
-    //     action_name_="a";
-    // }
-
-    void executeCB(const robonuc_action::Robot_statusGoalConstPtr  &goal) //const actionlib_tutorials::FibonacciGoalConstPtr &goal)
+    void fiducialtransformCB(const fiducial_msgs::FiducialTransformArray::ConstPtr &msg)
     {
-        //     // helper variables
-        //     ros::Rate r(1);
-        //     bool success = true;
+        //float x= msg->transform.translation.x ;
+        // std::cout << "CALLBACK fiducial transform" << msg->transforms[0].transform.translation.x << std::endl;
 
-        //     // push_back the seeds for the fibonacci sequence
-        //     feedback_.sequence.clear();
-        //     feedback_.sequence.push_back(0);
-        //     feedback_.sequence.push_back(1);
+        float x = msg->transforms[0].transform.translation.x;
+        float y = msg->transforms[0].transform.translation.y;
+        float z = msg->transforms[0].transform.translation.z;
 
-        //     // publish info to the console for the user
-        //     ROS_INFO("%s: Executing, creating fibonacci sequence of order %i with seeds %i, %i", action_name_.c_str(), goal->order, feedback_.sequence[0], feedback_.sequence[1]);
+        float xr = msg->transforms[0].transform.rotation.x;
+        float yr = msg->transforms[0].transform.rotation.y;
+        float zr = msg->transforms[0].transform.rotation.z;
+        float wr = msg->transforms[0].transform.rotation.w;
 
-        //     // start executing the action
-        //     for (int i = 1; i <= goal->order; i++)
-        //     {
-        //         // check that preempt has not been requested by the client
-        //         if (as_.isPreemptRequested() || !ros::ok())
-        //         {
-        //             ROS_INFO("%s: Preempted", action_name_.c_str());
-        //             // set the action state to preempted
-        //             as_.setPreempted();
-        //             success = false;
-        //             break;
-        //         }
-        //         feedback_.sequence.push_back(feedback_.sequence[i] + feedback_.sequence[i - 1]);
-        //         // publish the feedback
-        //         as_.publishFeedback(feedback_);
-        //         // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
-        //         r.sleep();
-        //     }
+        tf::Quaternion q(xr, yr, zr, wr);
+        // tf::Matrix3x3 m(q);
+        // double roll, pitch, yaw;
+        // m.getRPY(roll, pitch, yaw);
 
-        //     if (success)
-        //     {
-        //         result_.sequence = feedback_.sequence;
-        //         ROS_INFO("%s: Succeeded", action_name_.c_str());
-        //         // set the action state to succeeded
-        //         as_.setSucceeded(result_);
-        //     }
+        // std::cout << "Roll: " << roll << ", Pitch: " << pitch << ", Yaw: " << yaw << std::endl;
+
+        camera_T_fobject.setOrigin(tf::Vector3(x, y, z));
+        // tf::Quaternion q;
+        // q.setRPY(0, 0, a);
+        camera_T_fobject.setRotation(q);
+
+        br.sendTransform(tf::StampedTransform(camera_T_fobject, ros::Time::now(), "camera_rgb_optical_frame", "fiducial_object"));
+    }
+
+    void executeCB(const robonuc_action::Robot_statusGoalConstPtr &goal)
+    {
+        // helper variables
+        ros::Rate r(0.2);
+        bool success = true;
+        float x, y, z;
+        double th_R = 0.100;
+        double th_P = 0.100;
+        double th_Y = 0.100;
+
+        bool orientation_not_ok = true;
+
+        // listener.lookupTransform("fiducial_object", "robot_base_link", ros::Time(0), baselink_T_fobject);
+        // listener.waitForTransform("fiducial_object", "robot_base_link", ros::Time::now(),ros::Duration(1.0));
+        // listener.lookupTransform("fiducial_object", "robot_base_link", ros::Time(0), baselink_T_fobject);
+        while (orientation_not_ok)
+        {
+            try
+            {
+                listener.lookupTransform("robot_base_link", "camera_rgb_optical_frame", ros::Time(0), baselink_T_camera);
+
+                baselink_T_fobject = baselink_T_camera * camera_T_fobject;
+                x = baselink_T_fobject.getOrigin().x();
+                y = baselink_T_fobject.getOrigin().y();
+                z = baselink_T_fobject.getOrigin().z();
+                std::cout << "x,y,z= " << x << ", " << y << ", " << z << std::endl;
+
+                // th_Y = tf::getYaw(baselink_T_fobject.getRotation());
+
+                tf::Quaternion q = baselink_T_fobject.getRotation();
+                tf::Matrix3x3 matrix(q);
+                matrix.getRPY(th_R, th_P, th_Y);
+
+                // std::cout << "YAW= " << th << std::endl;
+            }
+            catch (tf::TransformException ex)
+            {
+                ROS_ERROR("%s", ex.what());
+                ros::Duration(0.1).sleep();
+                success = false;
+                break;
+            }
+
+            // push_back the seeds for the Robot_status sequence
+            feedback_.sequence.clear();
+
+            // feedback_.sequence.push_back(y);
+
+            ROS_INFO("Executing, PlatformOrientaion, x=%f, y=%f, z=%f yaw=%f, roll=%f, pitch=%f", x, y, z, th_Y, th_R, th_P);
+
+            if (abs(th_Y) >= 1.45 && abs(th_Y) <= 1.68)
+            {
+                orientation_not_ok = false;
+                feedback_.sequence.push_back(0);
+            }
+            else if (abs(th_Y) <= 0.4)
+            {
+                orientation_not_ok = false;
+                feedback_.sequence.push_back(1);
+            }
+            else
+            {
+                feedback_.sequence.push_back(10);
+
+                vel_msg.linear_vel = 0.025;
+                vel_msg.angular_vel = 0;
+            }
+
+            as_.publishFeedback(feedback_);
+        }
+
+        if (success)
+        {
+            result_.result = true; //feedback_.sequence;
+            //ROS_INFO("%s: Succeeded", action_name_.c_str());
+            // set the action state to succeeded
+        }
+        else
+        {
+            result_.result = false;
+        }
+        as_.setSucceeded(result_);
     }
 };
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "fibonacci");
+    ros::init(argc, argv, "GetPlatformOrientation");
 
-    FibonacciAction fibonacci("fibonacci");
+    OrientationAction PlatformOrientation("PlatformOrientation");
     ros::spin();
 
     return 0;

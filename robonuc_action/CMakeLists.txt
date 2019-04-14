@@ -14,6 +14,9 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   actionlib_msgs
   actionlib
+  tf
+  fiducial_msgs
+  r_platform
 )
 
 ## System dependencies are found with CMake's conventions
@@ -111,7 +114,7 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robonuc_action
 #  CATKIN_DEPENDS roscpp rospy std_msgs
-CATKIN_DEPENDS message_runtime actionlib_msgs
+CATKIN_DEPENDS message_runtime actionlib_msgs r_platform
 )
 
 ###########

@@ -25,10 +25,12 @@
 #include <actionlib/client/terminal_state.h>
 #include <robonuc_action/Robot_statusAction.h>
 
+#include <robonuc_plat_orientation_action/Robot_PlatformOrientationAction.h>
 
 using namespace std;
 
-typedef actionlib::SimpleActionClient<robonuc_action::Robot_statusAction> Client;
+typedef actionlib::SimpleActionClient<robonuc_action::Robot_statusAction> Client_status;
+typedef actionlib::SimpleActionClient<robonuc_plat_orientation_action::Robot_PlatformOrientationAction> Client_orientation;
 
 class checker // class checker
 {
@@ -43,6 +45,8 @@ class checker // class checker
 
     bool get_action = false; //variable that change when robot should stop
     robonuc_action::Robot_statusGoal goal;
+    robonuc_plat_orientation_action::Robot_PlatformOrientationGoal goal_orientation;
+
 
     int linear_, angular_;    // id of angular and linear axis (position in the array)
     float l_scale_, a_scale_; // linear and angular scale
@@ -55,21 +59,23 @@ class checker // class checker
                 angular_(3),
                 l_scale_(0.025),
                 a_scale_(0.025),
-                ac("RobotStatusAction", true)
+                ac("RobotStatusAction", true),
+                ac_orientation("GetPlatformOrientation", true)
     {
         ss.str("");
 
-        referee_mode_msg.data=-1;
+        referee_mode_msg.data = -1;
 
         ROS_INFO("Waiting for action server to start.");
         ac.waitForServer();
+        ac_orientation.waitForServer();
         ROS_INFO("Action server started, can send goal.");
     }
 
     void chatterCallback(const std_msgs::String::ConstPtr &msg)
     {
-        //ROS_INFO("I heard: [%d]", msg->data);
-        cout << "[integrated_Referee] Iam reading:" << msg->data << endl;
+        //ROS_INFO("[integrated_Referee] Iam reading: [%s]", msg->data);
+        // cout << "[integrated_Referee] Iam reading:" << msg->data << endl;
         ss.str(msg->data);
         // cout << "ss=" << ss.str() << endl;
     }
@@ -114,7 +120,7 @@ class checker // class checker
 
         //     vel_msg.linear_vel = l_scale_ * joy->axes[linear_];
         //     vel_msg.angular_vel = a_scale_ * joy->axes[angular_];
-        
+
         // robot_allowed = true; //comentar!
         if (get_action)
         {
@@ -126,23 +132,20 @@ class checker // class checker
             if (finished_before_timeout)
             {
                 robonuc_action::Robot_statusResultConstPtr myresult = ac.getResult();
-                if( myresult->result== true)
+                if (myresult->result == true)
                 {
-                    robot_allowed= true;
+                    robot_allowed = true;
                 }
                 else
                 {
-                    robot_allowed= false;
+                    robot_allowed = false;
                 }
-                
             }
             else
             {
-                robot_allowed= false;
+                robot_allowed = false;
             }
         }
-            
-
 
         if (robot_allowed == true && ss.str() == "Platform should move.")
         {
@@ -154,29 +157,40 @@ class checker // class checker
 
             referee_mode_msg.data = 1; //auto_picking_mode
 
-            get_action=false;
+            get_action = false;
         }
-        else if (ss.str() != "Platform should move.") 
+        else if (ss.str() != "Platform should move." )
         {
             goal.mode = 3;
             ac.sendGoal(goal);
 
-            bool finished_before_timeout = ac.waitForResult(ros::Duration(15.0));
+            bool finished_before_timeout_mode3 = ac.waitForResult(ros::Duration(15.0));
+            robonuc_action::Robot_statusResultConstPtr myresult_mode3 = ac.getResult();
+
+            if (finished_before_timeout_mode3 && (myresult_mode3->result == true))
+            {
+                //we can action the orientation
+                goal_orientation.goal = 1;
+                ac_orientation.sendGoal(goal_orientation);
+
+                bool finished_before_timeout_orientation = ac.waitForResult(ros::Duration(45));
+                ROS_INFO("AUTO-ORIENTATION DONE");
+            }
+
             robot_allowed = false;
         }
         else
         {
             cout << "[integrated_referee]PLAT will NOT be moved!" << endl;
             cout << "ss=" << ss.str() << endl;
-            
         }
 
         referee_pub.publish(referee_mode_msg);
-
     }
 
   private:
-    Client ac;
+    Client_status ac;
+    Client_orientation ac_orientation;
 };
 
 int main(int argc, char **argv)

@@ -35,7 +35,7 @@ class checker // class checker
     void chatterCallback(const std_msgs::Float32::ConstPtr &msg)
     {
         //ROS_INFO("I heard: [%d]", msg->data);
-        cout << "[check_feasibility] Iam reading:" << msg->data << endl;
+        // cout << "[check_feasibility] Iam reading:" << msg->data << endl;
 
         if ( (msg->data >= laser_limit) && (msg->data >0) )
         {

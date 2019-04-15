@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robonuc_action)
+project(robonuc_plat_orientation_action)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -69,7 +69,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 ## Generate actions in the 'action' folder
 add_action_files(
   DIRECTORY action
-  FILES Robot_status.action
+  FILES Robot_PlatformOrientation.action
 #   Action1.action
 #   Action2.action
 )
@@ -112,7 +112,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES robonuc_action
+#  LIBRARIES robonuc_plat_orientation_action
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 CATKIN_DEPENDS message_runtime actionlib_msgs r_platform
 )
@@ -129,7 +129,7 @@ include_directories( include
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robonuc_action.cpp
+#   src/${PROJECT_NAME}/robonuc_plat_orientation_action.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -140,7 +140,7 @@ include_directories( include
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robonuc_action_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/robonuc_plat_orientation_action_node.cpp)
 
 #comentei
 #add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
@@ -165,14 +165,14 @@ target_link_libraries(GetPlatformOrientation
   # ${PCL_LIBRARIES}
 )
 
-# add_dependencies(
-#   GetPlatformOrientation
-#   ${robonuc_action_EXPORTED_TARGETS}
-# )
+add_dependencies(
+  GetPlatformOrientation
+  ${robonuc_plat_orientation_action_EXPORTED_TARGETS}
+)
 
 #comentei
 #target_link_libraries(robonuc_control_workspace ${catkin_LIBRARIES} )
-#add_dependencies(robonuc_control_workspace ${robonuc_action_EXPORTED_TARGETS} )
+#add_dependencies(robonuc_control_workspace ${robonuc_plat_orientation_action_EXPORTED_TARGETS} )
 
 #############
 ## Install ##
@@ -214,7 +214,7 @@ target_link_libraries(GetPlatformOrientation
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robonuc_action.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_robonuc_plat_orientation_action.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

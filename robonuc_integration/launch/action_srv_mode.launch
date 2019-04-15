@@ -1,10 +1,29 @@
 <?xml version="1.0"?>
 <launch>
 
-<!-- moveit lancuh and robot control -->
-<include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
+    <!-- moveit lancuh and robot control -->
+    <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
 
-<!-- action serv for robot status/mode -->
-<node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
+    <!-- action serv for robot status/mode -->
+    <node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
+
+    <!-- moveit lancuh and robot control -->
+    <!-- <include file="$(find robonuc_integration)/launch/aprox_orientation_kinect.launch" /> -->
+    <!-- Kinect Drivers -->
+    <include file="$(find bin_picking)/launch/kinect.launch" />
+
+    <!-- launch the aruco detection -->
+    <include file="$(find aruco_detect)/launch/aruco_detect.launch">
+        <arg name="camera" value="camera/rgb" />
+        <arg name="image" value="image_raw" />
+        <!-- <arg name="fiducial_len" value="0.136" /> -->
+        <!-- <arg name="fiducial_len" value="0.82" /> -->
+        <arg name="fiducial_len" value="0.08" />
+        <arg name="dictionary" value="16" />
+        <!-- <arg name="fiducial_len" value="0.1558" /> -->
+    </include>
+
+    <!-- action serv for robotorientation -->
+    <node name="GetPlatformOrientation" pkg="robonuc_plat_orientation_action" type="GetPlatformOrientation" output="screen"/>
 
 </launch>

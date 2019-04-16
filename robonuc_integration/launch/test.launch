@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+
+    <!-- joy node -->
+        <node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+            <param name="dev" type="string" value="/dev/input/js0" />
+            <param name="deadzone" value="0.12" />
+            <param name="autorepeat_rate" value="20" />
+        </node>
+        
+    <!-- action serv for robot status/mode -->
+    <node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
+
+    <!-- action serv for robotorientation -->
+    <node name="GetPlatformOrientation" pkg="robonuc_plat_orientation_action" type="GetPlatformOrientation" output="screen"/>
+
+    <node name="GetPlatformLaserAproximation" pkg="robonuc_aprox_laser_action" type="GetPlatformLaserAproximation" output="screen"/>
+
+    <node name="integrated_referee2" pkg="robonuc_integration" type="integrated_referee2" output="screen"/>
+
+</launch>

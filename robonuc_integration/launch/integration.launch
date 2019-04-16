@@ -36,7 +36,8 @@
     <node name="check_feasibility" pkg="robonuc_integration" type="check_feasibility" output="screen"/>
 
     <!-- Launch the referee! Decides to move or to stop platform, and execute or not B-picking  -->
-    <node name="integrated_referee" pkg="robonuc_integration" type="integrated_referee" output="screen"/>
+    <!-- <node name="integrated_referee" pkg="robonuc_integration" type="integrated_referee" output="screen"/> -->
+    <node name="integrated_referee2" pkg="robonuc_integration" type="integrated_referee2" output="screen"/>
 
 
     <!-- Launch the robonuc_control_workspace : security motions .... -->

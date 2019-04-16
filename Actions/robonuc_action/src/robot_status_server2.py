@@ -136,11 +136,10 @@ class RefServer (ActionServer):
             gh.set_accepted()
             self.group.clear_pose_targets()  # clear pose target
             joint_values = mode_2(joint_values)
+            self.group.set_joint_value_target(joint_values)
             self.group.go(wait=True)
             #gh.set_aborted(None, "The ref server has aborted")
-
-            self.group.set_joint_value_target(joint_values)
-
+            
         elif goal.mode == 3:
             gh.set_accepted()
             self.group.clear_pose_targets()  # clear pose target

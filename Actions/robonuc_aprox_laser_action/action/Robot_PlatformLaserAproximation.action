@@ -1,0 +1,8 @@
+#goal definition
+int32 goal
+---
+#result definition
+bool result
+---
+#feedback
+float64[] sequence

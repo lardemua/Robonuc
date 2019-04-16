@@ -46,7 +46,7 @@ class OrientationAction
         transform_sub = nh_.subscribe("/fiducial_transforms", 1,
                                       &OrientationAction::fiducialtransformCB, this);
 
-        vel_pub = nh_.advertise<r_platform::navi>("/navi_commands", 20);
+        vel_pub = nh_.advertise<r_platform::navi>("/navi_commands", 3);
 
         as_.start();
     }
@@ -91,6 +91,7 @@ class OrientationAction
     void executeCB(const robonuc_plat_orientation_action::Robot_PlatformOrientationGoalConstPtr &goal)
     {
         // helper variables
+        float velocidade = 0.06;
         ros::Rate r(0.2);
         bool success = true;
         float x, y, z;
@@ -105,6 +106,15 @@ class OrientationAction
         // listener.lookupTransform("fiducial_object", "robot_base_link", ros::Time(0), baselink_T_fobject);
         while (orientation_not_ok)
         {
+            if (as_.isPreemptRequested() || !ros::ok())
+            {
+                ROS_INFO("%s: Preempted", action_name_.c_str());
+                // set the action state to preempted
+                as_.setPreempted();
+                success = false;
+                break;
+            }
+
             try
             {
                 listener.lookupTransform("robot_base_link", "camera_rgb_optical_frame", ros::Time(0), baselink_T_camera);
@@ -143,8 +153,9 @@ class OrientationAction
                 orientation_not_ok = true;
                 feedback_.sequence.push_back(1);
                 vel_msg.linear_vel = 0;
-                vel_msg.angular_vel = 0.025;
-                 ROS_INFO("th>0.15");
+                // vel_msg.angular_vel = 0.025;
+                vel_msg.angular_vel = velocidade;
+                ROS_INFO("th>0.15");
                 vel_pub.publish(vel_msg);
             }
             else if (th_Y <= -0.09)
@@ -152,7 +163,8 @@ class OrientationAction
                 orientation_not_ok = true;
                 feedback_.sequence.push_back(1);
                 vel_msg.linear_vel = 0;
-                vel_msg.angular_vel = -0.025;
+                // vel_msg.angular_vel = -0.025;
+                vel_msg.angular_vel = -velocidade;
                 ROS_INFO("th < -0.15");
                 vel_pub.publish(vel_msg);
             }
@@ -161,7 +173,6 @@ class OrientationAction
                 orientation_not_ok = false;
                 feedback_.sequence.push_back(10);
                 // orientation_not_ok=true;
-
             }
 
             as_.publishFeedback(feedback_);

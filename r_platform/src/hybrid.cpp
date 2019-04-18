@@ -26,6 +26,8 @@
 #include <vector>
 #include <visualization_msgs/Marker.h>
 
+#include "std_msgs/Int8.h" //for /RobotStatus
+
 //=======================================================================================
 //===================================== CLASS
 //===========================================
@@ -43,6 +45,10 @@ public:
   void publish_vel_msg();
 
   void modeDecider(void);
+
+  int action_mode = 0; //{0,1,2,3,4}
+
+  void RobotStatusCallback(const std_msgs::Int8::ConstPtr &msg);
 
 private:
   void autoNav(const geometry_msgs::Twist::ConstPtr &vel);
@@ -68,6 +74,7 @@ private:
   ros::Subscriber laser_sub_;
   ros::Subscriber laser2_sub_;
   ros::Publisher vis_pub_;
+  ros::Subscriber RobotStatus_sub;
 
   r_platform::navi vel_msg_;
 
@@ -104,6 +111,8 @@ TeleopRobonuc::TeleopRobonuc()
   laser2_sub_ = nh_.subscribe<sensor_msgs::LaserScan>(
       "scan1", 10, &TeleopRobonuc::laserDanger2, this);
 
+  RobotStatus_sub = nh_.subscribe<std_msgs::Int8>("RobotStatus", 10, &TeleopRobonuc::RobotStatusCallback, this);
+
   vis_pub_ = nh_.advertise<visualization_msgs::Marker>("/mode", 0);
 }
 
@@ -115,6 +124,14 @@ void TeleopRobonuc::publish_vel_msg() { vel_pub_.publish(vel_msg()); }
 //=================================== CALLBACKS
 //=========================================
 //=======================================================================================
+
+
+void TeleopRobonuc::RobotStatusCallback(const std_msgs::Int8::ConstPtr &msg)
+{
+  action_mode = msg->data;
+  ROS_INFO("Reciving action_mode=%d", action_mode);
+  // ROS_INFO("Reciv");
+}
 
 // tentar definir um rate de publicação fixo, e quando entra no loop é que vai
 // fazer subscribe.. Assim garantiam-se os 20 Hz
@@ -614,7 +631,10 @@ int main(int argc, char **argv)
 
     teleop_robonuc.modeDecider();
 
-    teleop_robonuc.publish_vel_msg();
+    if(teleop_robonuc.action_mode == 1)
+    {
+      teleop_robonuc.publish_vel_msg();
+    }
 
     ros::spinOnce();
 

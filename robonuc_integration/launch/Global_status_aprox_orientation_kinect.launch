@@ -41,4 +41,7 @@
         <!-- <arg name="fiducial_len" value="0.1558" /> -->
     </include>
 
+    <!-- action serv for robotorientation -->
+    <node name="GetPlatformOrientation" pkg="robonuc_plat_orientation_action" type="GetPlatformOrientation" output="screen"/>
+
 </launch>

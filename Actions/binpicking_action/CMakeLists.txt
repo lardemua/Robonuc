@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(robonuc_integration)
+project(binpicking_action)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,18 +11,16 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  sensor_msgs
-  r_platform
   message_generation
   actionlib_msgs
-  robonuc_action
-  robonuc_plat_orientation_action
-  robonuc_aprox_laser_action
-  binpicking_action
+  actionlib
+  # tf
+  # fiducial_msgs
+  # r_platform
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -56,8 +54,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
-  # FILES
-  # navi.msg
+#   FILES
 #   Message1.msg
 #   Message2.msg
 # )
@@ -69,18 +66,19 @@ find_package(catkin REQUIRED COMPONENTS
 #   Service2.srv
 # )
 
-## Generate actions in the 'action' folderr_platform_generate_messages_cpp
-# add_action_files(
-#   FILES
+## Generate actions in the 'action' folder
+add_action_files(
+  DIRECTORY action
+  FILES Robot_binpicking.action
 #   Action1.action
 #   Action2.action
-# )
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  actionlib_msgs
   std_msgs
-  sensor_msgs
 )
 
 ################################################
@@ -114,9 +112,9 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES robonuc_integration
-CATKIN_DEPENDS roscpp rospy std_msgs r_platform robonuc_action robonuc_aprox_laser_action robonuc_plat_orientation_action binpicking_action
-#  DEPENDS system_lib
+#  LIBRARIES binpicking_action
+#  CATKIN_DEPENDS roscpp rospy std_msgs
+CATKIN_DEPENDS message_runtime actionlib_msgs #r_platform
 )
 
 ###########
@@ -125,14 +123,13 @@ CATKIN_DEPENDS roscpp rospy std_msgs r_platform robonuc_action robonuc_aprox_las
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+include_directories( include
+  ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/robonuc_integration.cpp
+#   src/${PROJECT_NAME}/binpicking_action.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -143,12 +140,10 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/robonuc_integration_node.cpp)
-add_executable(sensorRS232_v2 src/sensorRS232_v2.cpp)
-add_executable(check_feasibility src/check_feasibility.cpp)
-add_executable(integrated_referee src/integrated_referee.cpp)
-add_executable(integrated_referee2 src/integrated_referee2.cpp)
-# add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
+# add_executable(${PROJECT_NAME}_node src/binpicking_action_node.cpp)
+
+#comentei
+#add_executable(robonuc_control_workspace src/robonuc_control_workspace.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -165,44 +160,7 @@ add_executable(integrated_referee2 src/integrated_referee2.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(sensorRS232_v2
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
 
-target_link_libraries(check_feasibility
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
-
-target_link_libraries(integrated_referee
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
-
-target_link_libraries(integrated_referee2
-  ${catkin_LIBRARIES}
-  # ${PCL_LIBRARIES}
-)
-
-add_dependencies(
-  integrated_referee
-  ${robonuc_action_EXPORTED_TARGETS}
-  ${robonuc_plat_orientation_action_EXPORTED_TARGETS}
-)
-
-add_dependencies(
-  integrated_referee2
-  ${robonuc_action_EXPORTED_TARGETS}
-  ${robonuc_plat_orientation_action_EXPORTED_TARGETS}
-  ${robonuc_aprox_laser_action_EXPORTED_TARGETS}
-  ${binpicking_action_EXPORTED_TARGETS}
-)
-
-# target_link_libraries(robonuc_control_workspace
-#   ${catkin_LIBRARIES}
-#   # ${PCL_LIBRARIES}
-# )
 
 #############
 ## Install ##
@@ -244,7 +202,7 @@ add_dependencies(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_robonuc_integration.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_binpicking_action.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

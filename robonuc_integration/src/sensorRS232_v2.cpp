@@ -54,7 +54,7 @@ int main (int argc, char** argv)
     std_msgs::Float32 fix_value; 
     fix_value.data = 511.8;
 
-    fd=OpenPort("/dev/ttyACM2", NULL);
+    fd=OpenPort("/dev/ttyACM2", NULL); //ttyACM0 se n tiver os outros lasers
     
     
     while (ros::ok() & fd == -1) 

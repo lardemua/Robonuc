@@ -79,6 +79,9 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
+  ros::AsyncSpinner spinner(1);
+  spinner.start();
+
   //class checker
   class_robot my_class_robot;
 
@@ -88,27 +91,26 @@ int main(int argc, char **argv)
 
   const std::string PLANNING_GROUP = "manipulator";
 
-  // moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
+  moveit::planning_interface::MoveGroupInterface move_group(PLANNING_GROUP);
 
-  // moveit::planning_interface::MoveGroupInterface 
+  moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
-  // Raw pointers are frequently used to refer to the planning group for improved performance.
-  // const robot_state::JointModelGroup *joint_model_group =
-  //     move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+  //Raw pointers are frequently used to refer to the planning group for improved performance.
+  const robot_state::JointModelGroup *joint_model_group =
+      move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
-  // RobotState is the object that contains all the current position/velocity/acceleration data.
-  // moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
-  //
-  // Next get the current set of joint values for the group.
-  // std::vector<double> joint_group_positions;
-  // current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
+  //RobotState is the object that contains all the current position/velocity/acceleration data.
+  moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
+
+  //Next get the current set of joint values for the group.
+  std::vector<double> joint_group_positions;
+  current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
 
   // Now, let's modify one of the joints, plan to the new joint space goal and visualize the plan.
-  // joint_group_positions[0] = -1.0; // radians
-  // move_group.setJointValueTarget(joint_group_positions);
+  joint_group_positions[0] = -1.0; // radians
+  move_group.setJointValueTarget(joint_group_positions);
 
   ROS_INFO("Service Ready");
-  ros::spin();
 
   // ros::Rate loop_rate(20);
   // while (ros::ok())

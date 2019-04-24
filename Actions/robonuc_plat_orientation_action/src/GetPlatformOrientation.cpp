@@ -15,6 +15,7 @@
 #include <vector>
 
 #include <r_platform/navi.h> //for /navi_commands
+#include <unistd.h>
 
 class OrientationAction
 {
@@ -91,8 +92,7 @@ class OrientationAction
     void executeCB(const robonuc_plat_orientation_action::Robot_PlatformOrientationGoalConstPtr &goal)
     {
         // helper variables
-        float velocidade = 0.06;
-        ros::Rate r(0.2);
+        float velocidade = 0.02;
         bool success = true;
         float x, y, z;
         double th_R = 0.100;
@@ -147,8 +147,8 @@ class OrientationAction
             // feedback_.sequence.push_back(y);
 
             ROS_INFO("Executing, PlatformOrientaion, x=%f, y=%f, z=%f yaw=%f, roll=%f, pitch=%f", x, y, z, th_Y, th_R, th_P);
-
-            if (th_Y >= 0.09)
+            //usleep(5000);
+            if (th_Y >= 0.05)
             {
                 orientation_not_ok = true;
                 feedback_.sequence.push_back(1);
@@ -158,7 +158,7 @@ class OrientationAction
                 ROS_INFO("th>0.15");
                 vel_pub.publish(vel_msg);
             }
-            else if (th_Y <= -0.09)
+            else if (th_Y <= -0.05)
             {
                 orientation_not_ok = true;
                 feedback_.sequence.push_back(1);
@@ -180,6 +180,10 @@ class OrientationAction
 
         if (success)
         {
+            vel_msg.linear_vel = 0;
+            vel_msg.angular_vel = 0;
+            vel_pub.publish(vel_msg);
+
             result_.result = true; //feedback_.sequence;
             //ROS_INFO("%s: Succeeded", action_name_.c_str());
             // set the action state to succeeded
@@ -197,6 +201,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "GetPlatformOrientation");
 
     OrientationAction PlatformOrientation("GetPlatformOrientation");
+    ros::Rate r(20); //20hz
     ros::spin();
 
     return 0;

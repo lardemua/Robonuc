@@ -46,7 +46,7 @@ public:
 
   void modeDecider(void);
 
-  int action_mode = 0; //{0,1,2,3,4}
+  int action_mode = 1; //{0,1,2,3,4}
 
   void RobotStatusCallback(const std_msgs::Int8::ConstPtr &msg);
 

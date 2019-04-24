@@ -19,6 +19,8 @@
 
 #include <robonuc_aprox_laser_action/Robot_PlatformLaserAproximationAction.h>
 
+#include <unistd.h> //for sleep
+
 class AproximationAction
 {
   public:
@@ -57,21 +59,23 @@ class AproximationAction
 
     void chatterCallback(const std_msgs::String::ConstPtr &msg)
     {
-        //ROS_INFO("[integrated_Referee] Iam reading: [%s]", msg->data);
         // cout << "[integrated_Referee] Iam reading:" << msg->data << endl;
         ss.str(msg->data);
-        // cout << "ss=" << ss.str() << endl;
+        //std::cout << "ss=" << ss.str() << std::endl;
+        //ROS_INFO("[LASER ACTION] Iam reading: [%s]", ss.str() );
     }
 
     void executeCB(const robonuc_aprox_laser_action::Robot_PlatformLaserAproximationGoalConstPtr &goal)
     {
         float velocidade = 0.04;
         //helper variables
-        ros::Rate r(0.02);
+        //ros::Rate r(0.05);
         bool success = true;
 
         while (ss.str() == "Platform should move.")
         {
+            //ROS_INFO("I'M MOVING");
+            //usleep(100000);
 
             if (as_.isPreemptRequested() || !ros::ok() )
             {
@@ -99,6 +103,10 @@ class AproximationAction
 
         if (success)
         {
+            vel_msg.linear_vel = 0;
+            vel_msg.angular_vel = 0;
+            vel_pub.publish(vel_msg);
+
             result_.result = true;
             ROS_INFO("%s: Succeeded", action_name_.c_str());
         }

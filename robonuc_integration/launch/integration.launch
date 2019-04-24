@@ -40,8 +40,5 @@
     <node name="integrated_referee2" pkg="robonuc_integration" type="integrated_referee2" output="screen"/>
 
 
-    <!-- Launch the robonuc_control_workspace : security motions .... -->
-    <!-- <node name="robonuc_control_workspace" pkg="robonuc_integration" type="robonuc_control_workspace" output="screen"/> -->
-
 
 </launch>

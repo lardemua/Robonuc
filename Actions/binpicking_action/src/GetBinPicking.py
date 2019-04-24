@@ -30,10 +30,17 @@ from robonuc.msg import ios
 
 from generate_plan_move import generate_plan, move_robot
 
-import subprocess
+#import subprocess
+import threading
+import collections
 
+
+# Named tuple for storing the goal handle and the corresponding processing thread
+GoalHandleThread = collections.namedtuple('GoalHandleThread', 'goal_handle thread')
 
 class RefServer (ActionServer):
+
+    _threads = {}  # a dictionary containing a GoalHandleThread tuple for each goal processing thread
 
     def __init__(self, name):
         self.server_name = name
@@ -61,14 +68,14 @@ class RefServer (ActionServer):
 
         # Publisher of pointStamped of the grasping point
         grasping_point_pub = rospy.Publisher(
-                                            '/graspingPoint',
-                                            PointStamped,
-                                            queue_size=10)
-                                            # Publisher of pointStamped of the grasping point
+            '/graspingPoint',
+            PointStamped,
+            queue_size=10)
+        # Publisher of pointStamped of the grasping point
         io_pub = rospy.Publisher(
-                                '/io_client_messages',
-                                ios,
-                                queue_size=10)
+            '/io_client_messages',
+            ios,
+            queue_size=10)
 
         normal = Vector3()
         approx_point = Vector3()
@@ -115,6 +122,9 @@ class RefServer (ActionServer):
         success = True
         goal = gh.get_goal()
 
+        id = gh.get_goal_id().id
+        #rospy.loginfo("Received request for goal " + str(id))
+
         self._feedback.sequence = []
 
         rospy.loginfo("Got goal %d", int(goal.mode))
@@ -127,80 +137,74 @@ class RefServer (ActionServer):
         if goal.mode == 1:
             gh.set_accepted()
 
-            process =subprocess.call(["rosrun", "bin_picking", "move_fanuc_demo.py", "&"]);
+            # process =subprocess.call(["rosrun", "bin_picking", "move_fanuc_demo.py", "&"])
+            #process = subprocess.call(["roslaunch", "robonuc_integration", "display_urdf_total.launch"])
+
             # time.sleep(5)
-            # process.kill()
-            # count=0
-            # while count < 11:
-            #     count+=1
-            #     time.sleep(1)
-            #     if count>=10 :
-            #         break
+
             # process.kill()
 
             # ========PICKING==========
-            # rospy.Subscriber("/targets_pose", TargetsPose, self.callback_targets_pose)
-            # rospy.Subscriber("/output_laser_sensor", Float32, self.callback_laser_sensor)
+            rospy.Subscriber("/targets_pose", TargetsPose, self.callback_targets_pose)
+            rospy.Subscriber("/output_laser_sensor", Float32, self.callback_laser_sensor)
 
-            # self.group.set_planning_time(10.0)
-            # self.group.set_planner_id("RRTConnectkConfigDefault")
+            self.group.set_planning_time(10.0)
+            self.group.set_planner_id("RRTConnectkConfigDefault")
 
-            # visualization_point = Vector3()
-            # visualization_point.x = 0.480
-            # visualization_point.y = 0.000
-            # visualization_point.z = 0.440
-            # # visualization_point.z = 0.440 -0.200
+            visualization_point = Vector3()
+            visualization_point.x = 0.480
+            visualization_point.y = 0.000
+            visualization_point.z = 0.440
+            # visualization_point.z = 0.440 -0.200
 
-            # # Quaternions of the Euler angles
-            # roll = np.pi
-            # quaternion_init = quaternion_from_euler(-np.pi, 0, roll)
+            # Quaternions of the Euler angles
+            roll = np.pi
+            quaternion_init = quaternion_from_euler(-np.pi, 0, roll)
 
-            # # 1st POSITION - Visualize Workspace
-            # # GENERATING PLAN
-            # plan1, fraction1 = generate_plan(self.group, visualization_point, 5, quaternion_init)
+            # 1st POSITION - Visualize Workspace
+            # GENERATING PLAN
+            plan1, fraction1 = generate_plan(self.group, visualization_point, 5, quaternion_init)
 
-            # # MOVEMENT
-            # move_robot(plan1, fraction1, self.group)
+            # MOVEMENT
+            move_robot(plan1, fraction1, self.group)
 
-            # # Launch objDetection and pointTFtransfer nodes
-            # uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-            # roslaunch.configure_logging(uuid)
-            # launch_objDetect_pointTF = roslaunch.parent.ROSLaunchParent(uuid, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/objDetection_pointTFtranfer.launch"])
-            # # Start Launch node objDetection and pointTFtransfer
-            # launch_objDetect_pointTF.start()
+            #LAUNCH obj detection thread
+            thread = threading.Thread(target=self.launch_objDetection_pointTFtranfer_thread, args=(gh,))  # create a thread to process this goal
+            self._threads[id] = (GoalHandleThread(gh, thread))  # add to tasks dictionary
+            thread.start()  # initiate thread
 
-            # rospy.wait_for_message("/targets_pose", TargetsPose)
+            time.sleep(8)
 
-            # #Stop Launch node objDetection and pointTFtransfer
-            # launch_objDetect_pointTF.shutdown()
-            # # after having stopped both nodes the subscribed topics will be the last published and will be a fixed value
+            rospy.wait_for_message("/targets_pose", TargetsPose)
 
-            # # Quaternions of the Euler angles
-            # quaternion = quaternion_from_euler( roll, math.radians(-pitch.data), math.radians(-yaw.data), 'rzyx')
 
-            # # 2nd POSITION - Measure with laser sensor
-            # # GENERATING PLAN
-            # plan2, fraction2 = generate_plan(self.group, eef_position_laser, 5, quaternion)
+            # Quaternions of the Euler angles
+            quaternion = quaternion_from_euler( roll, math.radians(-pitch.data), math.radians(-yaw.data), 'rzyx')
 
-            # # MOVING
-            # move_robot(plan2, fraction2, self.group)
-            # # if raw_input("If you want to EXIT press 'e': ") == 'e' :
-            # #     exit()
+            # 2nd POSITION - Measure with laser sensor
+            # GENERATING PLAN
+            plan2, fraction2 = generate_plan(self.group, eef_position_laser, 5, quaternion)
+
+            # MOVING
+            move_robot(plan2, fraction2, self.group)
+            # if raw_input("If you want to EXIT press 'e': ") == 'e' :
+            #     exit()
 
             # uuid3 = roslaunch.rlutil.get_or_generate_uuid(None, False)
             # roslaunch.configure_logging(uuid3)
-            # launch_sensorRS232 = roslaunch.parent.ROSLaunchParent(uuid3, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/sensorRS232.launch"])
+            # launch_sensorRS232 = roslaunch.parent.ROSLaunchParent(uuid3, ["/home/tiago/catkin_ws/           src/Bin-picking/bin_picking/launch/sensorRS232.launch"])
             # # Start Launch node sensorRS232
             # launch_sensorRS232.start()
 
-            # rospy.wait_for_message("/output_laser_sensor", Float32)
-            # # Stop Launch node sensorRS232
+            # rospy.sleep(11.)
+
             # launch_sensorRS232.shutdown()
+
 
             # print laser_reading.data
             # laser_reading_float = laser_reading.data + 1.000
-            # # for vertical eggs
-            # # laser_reading_float = laser_reading.data + 1.800
+            # for vertical eggs
+            # laser_reading_float = laser_reading.data + 1.800
 
             # grasping_point = Vector3()
             # # + or -
@@ -253,10 +257,10 @@ class RefServer (ActionServer):
             # monitoring_ios(3,4)
 
             # =========//===Endpicking===//===========
-
         else:
             success = False
             gh.set_aborted(None, "The ref server has aborted")
+            return
 
         if success:
             # self._result.sequence = self._feedback.sequence
@@ -271,20 +275,45 @@ class RefServer (ActionServer):
 
             self._result.result = True
             rospy.loginfo('%s: Succeeded', self)
+            return
+
+    def launch_objDetection_pointTFtranfer_thread(self,gh):
+        
+        goal = gh.get_goal()
+        id = gh.get_goal_id().id
+        _, thread = self._threads[id] 
+        
+        rospy.logwarn("Launched a processing thread for goal id " + str(id))
+
+        #Launch objDetection and pointTFtransfer nodes
+        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        roslaunch.configure_logging(uuid)
+        launch_objDetect_pointTF = roslaunch.parent.ROSLaunchParent(uuid, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/objDetection_pointTFtranfer.launch"])
+        # Start Launch node objDetection and pointTFtransfer
+        launch_objDetect_pointTF.start()
+
+        time.sleep(7)
+        #Stop Launch node objDetection and pointTFtransfer
+        launch_objDetect_pointTF.shutdown()
+        # after having stopped both nodes the subscribed topics will be the last published and will be a fixed value
+
+
+        del self._threads[id]  # remove from dictionary
+        return
 
 
 
     def cancelCallback(self, gh):
-        #process.kill()
+        # process.kill()
         rospy.loginfo("XXX action canceled XXX")
-
+        return
         # if self._as.is_preempt_requested():
         #     self._as.set_preempted()
-            # pass
+        # pass
 
 
 if __name__ == "__main__":
     rospy.init_node("BinPickingAction")
-    ref_server=RefServer("BinPickingAction")
+    ref_server = RefServer("BinPickingAction")
 
     rospy.spin()

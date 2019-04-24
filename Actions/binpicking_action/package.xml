@@ -68,6 +68,9 @@
   <build_depend>fiducial_msgs</build_depend>
   <build_export_depend>fiducial_msgs</build_export_depend>
 
+  <build_depend>bin_picking</build_depend>
+  <build_export_depend>bin_picking</build_export_depend>
+
   <!-- <build_depend>r_platform</build_depend>
   <build_export_depend>r_platform</build_export_depend> -->
 

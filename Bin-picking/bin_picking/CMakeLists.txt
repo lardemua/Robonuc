@@ -60,11 +60,13 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+add_service_files(
+  FILES
+  get_targets_pose.srv
+  get_laser_average.srv
 #   Service1.srv
 #   Service2.srv
-# )
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -147,10 +149,13 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 
 add_executable(pointTFtransfer src/pointTFtransfer.cpp)
+add_executable(pointTFtransfer_v2 src/pointTFtransfer_v2.cpp)
 
 add_executable(objDetection src/objDetection.cpp)
+add_executable(objDetection_v2 src/objDetection_v2.cpp)
 
 add_executable(sensorRS232 src/sensorRS232.cpp)
+add_executable(sensorRS232_v2_service src/sensorRS232_v2_service.cpp)
 
 add_executable(end_effector_position src/end_effector_position.cpp)
 
@@ -170,7 +175,17 @@ ${catkin_LIBRARIES}
 # ${PCL_LIBRARIES}
 )
 
+target_link_libraries(pointTFtransfer_v2
+${catkin_LIBRARIES}
+# ${PCL_LIBRARIES}
+)
+
 target_link_libraries(objDetection
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
+
+target_link_libraries(objDetection_v2
   ${catkin_LIBRARIES}
   # ${PCL_LIBRARIES}
 )
@@ -179,6 +194,12 @@ target_link_libraries(sensorRS232
   ${catkin_LIBRARIES}
   # ${PCL_LIBRARIES}
 )
+
+target_link_libraries(sensorRS232_v2_service
+  ${catkin_LIBRARIES}
+  # ${PCL_LIBRARIES}
+)
+
 target_link_libraries(end_effector_position
   ${catkin_LIBRARIES}
   # ${PCL_LIBRARIES}

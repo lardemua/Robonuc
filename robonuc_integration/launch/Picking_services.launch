@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="objDetection_v2" pkg="bin_picking" type="objDetection_v2" />
+    <node name="pointTFtransfer_v2" pkg="bin_picking" type="pointTFtransfer_v2" output="screen" />
+
+    <node name="sensorRS232_v2_service" pkg="bin_picking" type="sensorRS232_v2_service" output="screen"/>
+    
+</launch>

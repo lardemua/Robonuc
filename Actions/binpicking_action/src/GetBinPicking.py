@@ -31,16 +31,72 @@ from robonuc.msg import ios
 from generate_plan_move import generate_plan, move_robot
 
 #import subprocess
-import threading
-import collections
+# import threading
+# import collections
+
+from bin_picking.srv import *
+
+normal = Vector3()
+approx_point = Vector3()
+eef_position_laser = Vector3()
+roll = np.pi
+pitch = Float32()
+yaw = Float32()
+laser_reading = Float32()
+
+def monitoring_ios(function, ionumber):
+    cod = function*10 + ionumber
+    io_msg = ios()
+    io_msg.code = cod
+    print "Setting IOs code:"
+    print cod
+    #io_pub.publish(io_msg)
+
+def callback_targets_pose(targets_pose):
+
+    normal.x = targets_pose.normal.x
+    normal.y = targets_pose.normal.y
+    normal.z = targets_pose.normal.z
+    approx_point.x = targets_pose.approx_point.x
+    approx_point.y = targets_pose.approx_point.y
+    approx_point.z = targets_pose.approx_point.z
+    eef_position_laser.x = targets_pose.eef_position.x
+    eef_position_laser.y = targets_pose.eef_position.y
+    eef_position_laser.z = targets_pose.eef_position.z
+    pitch.data = targets_pose.euler_angles.y
+    yaw.data = targets_pose.euler_angles.x
+
+def callback_laser_sensor(output_laser_reading):
+
+    laser_reading.data = output_laser_reading.data
+
+def get_targets_pose_client():
+    x=1
+    rospy.wait_for_service('get_targets_pose')
+    try:
+        get_targets_pose_ = rospy.ServiceProxy('get_targets_pose', get_targets_pose)
+        resp1 = get_targets_pose_(x)
+        print(resp1.my_response)
+
+        return
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+        return
 
 
-# Named tuple for storing the goal handle and the corresponding processing thread
-GoalHandleThread = collections.namedtuple('GoalHandleThread', 'goal_handle thread')
+def get_laser_average_client():
+    x=1
+    rospy.wait_for_service('get_laser_average')
+    try:
+        get_laser_average_ = rospy.ServiceProxy('get_laser_average', get_laser_average)
+        resp1 = get_laser_average_(x)
+        print(resp1.my_response)
+        return
+    except rospy.ServiceException, e:
+        print "Service call failed: %s"%e
+        return
 
 class RefServer (ActionServer):
-
-    _threads = {}  # a dictionary containing a GoalHandleThread tuple for each goal processing thread
 
     def __init__(self, name):
         self.server_name = name
@@ -77,44 +133,8 @@ class RefServer (ActionServer):
             ios,
             queue_size=10)
 
-        normal = Vector3()
-        approx_point = Vector3()
-        eef_position_laser = Vector3()
-        roll = np.pi
-        pitch = Float32()
-        yaw = Float32()
-        laser_reading = Float32()
-
     # Function for sending a ROS msg to the vs_IO_client.cpp node responsable for altering the state of the IOs
     # function - 1 to read, 2 to switch on and 3 to switch of the respective IO number (ionumber)
-    def monitoring_ios(function, ionumber):
-        cod = function*10 + ionumber
-        io_msg = ios()
-        io_msg.code = cod
-        print "Setting IOs code:"
-        print cod
-        io_pub.publish(io_msg)
-
-    def callback_targets_pose(targets_pose):
-
-        normal.x = targets_pose.normal.x
-        normal.y = targets_pose.normal.y
-        normal.z = targets_pose.normal.z
-
-        approx_point.x = targets_pose.approx_point.x
-        approx_point.y = targets_pose.approx_point.y
-        approx_point.z = targets_pose.approx_point.z
-
-        eef_position_laser.x = targets_pose.eef_position.x
-        eef_position_laser.y = targets_pose.eef_position.y
-        eef_position_laser.z = targets_pose.eef_position.z
-
-        pitch.data = targets_pose.euler_angles.y
-        yaw.data = targets_pose.euler_angles.x
-
-    def callback_laser_sensor(output_laser_reading):
-
-        laser_reading.data = output_laser_reading.data
 
     # G======================GOALCALLBACK================================
     def goalCallback(self, gh):
@@ -145,8 +165,8 @@ class RefServer (ActionServer):
             # process.kill()
 
             # ========PICKING==========
-            rospy.Subscriber("/targets_pose", TargetsPose, self.callback_targets_pose)
-            rospy.Subscriber("/output_laser_sensor", Float32, self.callback_laser_sensor)
+            rospy.Subscriber("/targets_pose", TargetsPose, callback_targets_pose)
+            rospy.Subscriber("/output_laser_sensor_average", Float32, callback_laser_sensor)
 
             self.group.set_planning_time(10.0)
             self.group.set_planner_id("RRTConnectkConfigDefault")
@@ -168,12 +188,12 @@ class RefServer (ActionServer):
             # MOVEMENT
             move_robot(plan1, fraction1, self.group)
 
-            #LAUNCH obj detection thread
-            thread = threading.Thread(target=self.launch_objDetection_pointTFtranfer_thread, args=(gh,))  # create a thread to process this goal
-            self._threads[id] = (GoalHandleThread(gh, thread))  # add to tasks dictionary
-            thread.start()  # initiate thread
+            
 
-            time.sleep(8)
+            #rospy.loginfo("iam here")
+            #LAUNCH obj service
+            get_targets_pose_client()
+            #rospy.loginfo("SAI DA FUNcao")
 
             rospy.wait_for_message("/targets_pose", TargetsPose)
 
@@ -187,74 +207,72 @@ class RefServer (ActionServer):
 
             # MOVING
             move_robot(plan2, fraction2, self.group)
-            # if raw_input("If you want to EXIT press 'e': ") == 'e' :
-            #     exit()
 
-            # uuid3 = roslaunch.rlutil.get_or_generate_uuid(None, False)
-            # roslaunch.configure_logging(uuid3)
-            # launch_sensorRS232 = roslaunch.parent.ROSLaunchParent(uuid3, ["/home/tiago/catkin_ws/           src/Bin-picking/bin_picking/launch/sensorRS232.launch"])
-            # # Start Launch node sensorRS232
-            # launch_sensorRS232.start()
+            if raw_input("If you want to EXIT press 'e': ") == 'e' :
+                exit()
 
-            # rospy.sleep(11.)
+            get_laser_average_client()
 
-            # launch_sensorRS232.shutdown()
+            rospy.wait_for_message("/output_laser_sensor_average", Float32 )
 
 
-            # print laser_reading.data
-            # laser_reading_float = laser_reading.data + 1.000
+            print (laser_reading.data )
+            laser_reading_float = laser_reading.data + 1.000
             # for vertical eggs
             # laser_reading_float = laser_reading.data + 1.800
 
-            # grasping_point = Vector3()
-            # # + or -
-            # grasping_point.x = approx_point.x + laser_reading_float * 0.001 * normal.x
-            # grasping_point.y = approx_point.y + laser_reading_float * 0.001 * normal.y
-            # grasping_point.z = approx_point.z + laser_reading_float * 0.001 * normal.z
+            grasping_point = Vector3()
+            # + or -
+            grasping_point.x = approx_point.x + laser_reading_float * 0.001 * normal.x
+            grasping_point.y = approx_point.y + laser_reading_float * 0.001 * normal.y
+            grasping_point.z = approx_point.z + laser_reading_float * 0.001 * normal.z
 
-            # # 3rd POSITION - Approximation point
-            # # GENERATING PLAN
-            # plan3, fraction3 = generate_plan(self.group, approx_point, 5, quaternion)
+            # 3rd POSITION - Approximation point
+            # GENERATING PLAN
+            plan3, fraction3 = generate_plan(self.group, approx_point, 5, quaternion)
 
-            # # MOVING
-            # move_robot(plan3, fraction3, self.group)
+            rospy.loginfo("Plan generated")
 
-            # # 4th POSITION - Grasping point
-            # # GENERATING PLAN
-            # plan4, fraction4 = generate_plan(self.group, grasping_point, 5, quaternion)
 
             # # MOVING
-            # move_robot(plan4, fraction4, self.group)
+            move_robot(plan3, fraction3, self.group)
 
-            # # IO number 8 activates the suction
-            # # First activate IO number for for IO number 8 to work
-            # monitoring_ios(2,4)
-            # monitoring_ios(2,8)
+            # 4th POSITION - Grasping point
+            # GENERATING PLAN
+            plan4, fraction4 = generate_plan(self.group, grasping_point, 5, quaternion)
 
-            # # 5th POSITION -Return to Approximation point
-            # # GENERATING PLAN 5
-            # plan5, fraction5 = generate_plan(self.group, approx_point, 5, quaternion)
+            # MOVING
+            move_robot(plan4, fraction4, self.group)
 
-            # # MOVING
-            # move_robot(plan5, fraction5, self.group)
+            # IO number 8 activates the suction
+            # First activate IO number for for IO number 8 to work
+            monitoring_ios(2,4)
+            monitoring_ios(2,8)
 
-            # final_point = Vector3()
-            # final_point.x = 0.440
-            # final_point.y = -0.270
-            # final_point.z = 0.200
+            # 5th POSITION -Return to Approximation point
+            # GENERATING PLAN 5
+            plan5, fraction5 = generate_plan(self.group, approx_point, 5, quaternion)
 
-            # # Quaternions of the Euler angles
-            # quaternion_final = quaternion_from_euler(-np.pi, 0, roll)
+            # MOVING
+            move_robot(plan5, fraction5, self.group)
 
-            # # 1st POSITION - Visualize Workspace
-            # # GENERATING PLAN
-            # plan6, fraction6 = generate_plan(self.group, final_point, 5, quaternion_final)
+            final_point = Vector3()
+            final_point.x = 0.440
+            final_point.y = -0.270
+            final_point.z = 0.200
 
-            # # MOVEMENT
-            # move_robot(plan6, fraction6, self.group)
+            # Quaternions of the Euler angles
+            quaternion_final = quaternion_from_euler(-np.pi, 0, roll)
 
-            # monitoring_ios(3,8)
-            # monitoring_ios(3,4)
+            # 1st POSITION - Visualize Workspace
+            # GENERATING PLAN
+            plan6, fraction6 = generate_plan(self.group, final_point, 5, quaternion_final)
+
+            # MOVEMENT
+            move_robot(plan6, fraction6, self.group)
+
+            monitoring_ios(3,8)
+            monitoring_ios(3,4)
 
             # =========//===Endpicking===//===========
         else:
@@ -265,42 +283,13 @@ class RefServer (ActionServer):
         if success:
             # self._result.sequence = self._feedback.sequence
             self._feedback.sequence.append(1)
-            self._feedback.sequence.appSimpleActionServernd(1)
-            self._feedback.sequence.appSimpleActionServernd(1)
-            self._feedback.sequence.append(1)
-            self._feedback.sequence.append(1)
-            self._feedback.sequence.append(1)
-
             gh.publish_feedback(self._feedback)
-
             self._result.result = True
             rospy.loginfo('%s: Succeeded', self)
             return
-
-    def launch_objDetection_pointTFtranfer_thread(self,gh):
-        
-        goal = gh.get_goal()
-        id = gh.get_goal_id().id
-        _, thread = self._threads[id] 
-        
-        rospy.logwarn("Launched a processing thread for goal id " + str(id))
-
-        #Launch objDetection and pointTFtransfer nodes
-        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-        roslaunch.configure_logging(uuid)
-        launch_objDetect_pointTF = roslaunch.parent.ROSLaunchParent(uuid, ["/home/tiago/catkin_ws/src/Bin-picking/bin_picking/launch/objDetection_pointTFtranfer.launch"])
-        # Start Launch node objDetection and pointTFtransfer
-        launch_objDetect_pointTF.start()
-
-        time.sleep(7)
-        #Stop Launch node objDetection and pointTFtransfer
-        launch_objDetect_pointTF.shutdown()
-        # after having stopped both nodes the subscribed topics will be the last published and will be a fixed value
-
-
-        del self._threads[id]  # remove from dictionary
-        return
-
+        else :
+            gh.set_aborted(None, "The ref server has aborted")
+            return
 
 
     def cancelCallback(self, gh):

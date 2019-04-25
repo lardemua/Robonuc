@@ -129,7 +129,7 @@ class checker // class checker
                 robot_allowed = true;
                 ROS_INFO("Button A pressed! Robot=%d", robot_allowed);
             }
-            ROS_INFO("DEADMAN SWITCH - ON");
+            //ROS_INFO("DEADMAN SWITCH - ON");
         }
         else
         {
@@ -138,7 +138,7 @@ class checker // class checker
             ac_laproximation.cancelAllGoals();
             ac_orientation.cancelAllGoals();
             ac_binpicking.cancelAllGoals();
-            ROS_INFO("DEADMAN SWITCH - OFF");
+            //ROS_INFO("DEADMAN SWITCH - OFF");
             action_mode=1;
         }
         // vel_pub_.publish(vel_msg);
@@ -196,16 +196,20 @@ class checker // class checker
         goal.mode = 3;
         ac.sendGoal(goal);
 
-        bool finished_before_timeout_mode3 = ac.waitForResult(ros::Duration(15.0));
-        robonuc_action::Robot_statusResultConstPtr myresult_mode = ac.getResult();
+        bool finished_before_timeout_mode3 = ac.waitForResult(ros::Duration(40));
+        //robonuc_action::Robot_statusResultConstPtr myresult_mode = ac.getResult();
 
         bool finished_before_timeout_orientation = false;
 
-        if (finished_before_timeout_mode3 && (myresult_mode->result == true) && robot_allowed)
+        ROS_INFO("BEFORE IF, %d, %d", robot_allowed, finished_before_timeout_mode3);
+
+        if (finished_before_timeout_mode3 && robot_allowed)
         {
             //we can action the orientation
+            ROS_INFO("[after if: ASK ORIENTATION ACTION");
             goal_orientation.goal = 1;
             ac_orientation.sendGoal(goal_orientation);
+            ROS_INFO("GOAL SENT");
 
             finished_before_timeout_orientation = ac_orientation.waitForResult(ros::Duration(60));
             if (finished_before_timeout_orientation)
@@ -225,23 +229,25 @@ class checker // class checker
     }
     bool GetBinPicking(void)
     {
-        goal.mode = 0;
+        goal.mode = 2;
         ac.sendGoal(goal);
+        ROS_INFO("GOAL SENT for BINPICKING ACTION");
 
-        bool finished_before_timeout_mode3 = ac.waitForResult(ros::Duration(15.0));
+        bool finished_before_timeout_mode3 = ac.waitForResult(ros::Duration(25.0));
         robonuc_action::Robot_statusResultConstPtr myresult_mode0 = ac.getResult();
         if (finished_before_timeout_mode3)
         {
-            return true;
+            //return true;
         }
         else
         {
             return false;
         }
-        // goal_binpicking.mode = 1;
-        // ac_binpicking.sendGoal(goal_binpicking);
-        // bool finished_before_timeout_mode4 = ac_binpicking.waitForResult(ros::Duration(90.0));
-        // binpicking_action::Robot_binpickingResultConstPtr myresult_mode4 = ac_binpicking.getResult();
+        goal_binpicking.mode = 1;
+        ac_binpicking.sendGoal(goal_binpicking);
+        bool finished_before_timeout_mode4 = ac_binpicking.waitForResult(ros::Duration(120.0));
+        binpicking_action::Robot_binpickingResultConstPtr myresult_mode4 = ac_binpicking.getResult();
+        return true;
     }
 
     void action_Callback()
@@ -258,6 +264,7 @@ class checker // class checker
             }
             //=============================Camera ORIENTATION==================
             action_mode = 3;
+            ROS_INFO("GO TO ORIENTATION");
             if (!GetCameraOrientation())
             {
                 robot_allowed = false;
@@ -277,7 +284,7 @@ class checker // class checker
         }
         else
         {
-            ROS_INFO("[integrated_referee]PLAT will NOT be moved!");
+            //ROS_INFO("[integrated_referee]PLAT will NOT be moved!");
         }
     }
 

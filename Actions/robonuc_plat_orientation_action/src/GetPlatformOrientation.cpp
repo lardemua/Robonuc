@@ -91,8 +91,9 @@ class OrientationAction
 
     void executeCB(const robonuc_plat_orientation_action::Robot_PlatformOrientationGoalConstPtr &goal)
     {
+        ros::Rate r(0.2);
         // helper variables
-        float velocidade = 0.02;
+        float velocidade = 0.035;
         bool success = true;
         float x, y, z;
         double th_R = 0.100;
@@ -104,8 +105,10 @@ class OrientationAction
         // listener.lookupTransform("fiducial_object", "robot_base_link", ros::Time(0), baselink_T_fobject);
         // listener.waitForTransform("fiducial_object", "robot_base_link", ros::Time::now(),ros::Duration(1.0));
         // listener.lookupTransform("fiducial_object", "robot_base_link", ros::Time(0), baselink_T_fobject);
+        ROS_INFO("Goal recived");
         while (orientation_not_ok)
         {
+            ROS_INFO("Executing orientation");
             if (as_.isPreemptRequested() || !ros::ok())
             {
                 ROS_INFO("%s: Preempted", action_name_.c_str());
@@ -147,7 +150,7 @@ class OrientationAction
             // feedback_.sequence.push_back(y);
 
             ROS_INFO("Executing, PlatformOrientaion, x=%f, y=%f, z=%f yaw=%f, roll=%f, pitch=%f", x, y, z, th_Y, th_R, th_P);
-            //usleep(5000);
+            usleep(5000);
             if (th_Y >= 0.05)
             {
                 orientation_not_ok = true;
@@ -170,6 +173,9 @@ class OrientationAction
             }
             else
             {
+                vel_msg.linear_vel = 0;
+                vel_msg.angular_vel = 0;
+                vel_pub.publish(vel_msg);
                 orientation_not_ok = false;
                 feedback_.sequence.push_back(10);
                 // orientation_not_ok=true;

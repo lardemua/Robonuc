@@ -4,6 +4,9 @@
     <!-- moveit lancuh and robot control -->
     <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
 
+    <!-- Node to control I/Os -->
+    <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" />
+
     <!-- moveit lancuh and robot control -->
     <!-- <include file="$(find robonuc_integration)/launch/aprox_orientation_kinect.launch" /> -->
     <!-- Kinect Drivers -->
@@ -17,7 +20,7 @@
     <!-- action serv for robotaproxmation -->
     <node name="GetPlatformLaserAproximation" pkg="robonuc_aprox_laser_action" type="GetPlatformLaserAproximation" output="screen"/>
     <!-- action serv for bin_picking -->
-    <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/>
+    <!-- <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/> -->
     <!-- Node to control I/Os necessario para o binPicking server-->
     <!-- <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" /> -->
 
@@ -33,5 +36,7 @@
         <!-- <arg name="fiducial_len" value="0.1558" /> -->
     </include>
 
+
+    <include file="$(find robonuc_integration)/launch/Picking_services.launch" />
 
 </launch>

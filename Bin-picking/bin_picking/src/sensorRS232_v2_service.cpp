@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     ros::Rate r(100);
     while (nh.ok())
     {
-        fd = OpenPort("/dev/ttyACM0", NULL); //need to change ....
+        fd = OpenPort("/dev/ttyACM2", NULL); //need to change ....
         ros::spinOnce();
         
         if (fd == -1)

@@ -163,7 +163,6 @@ class RefServer (ActionServer):
             # time.sleep(5)
 
             # process.kill()
-
             # ========PICKING==========
             rospy.Subscriber("/targets_pose", TargetsPose, callback_targets_pose)
             rospy.Subscriber("/output_laser_sensor_average", Float32, callback_laser_sensor)
@@ -188,8 +187,6 @@ class RefServer (ActionServer):
             # MOVEMENT
             move_robot(plan1, fraction1, self.group)
 
-            
-
             #rospy.loginfo("iam here")
             #LAUNCH obj service
             get_targets_pose_client()
@@ -207,9 +204,6 @@ class RefServer (ActionServer):
 
             # MOVING
             move_robot(plan2, fraction2, self.group)
-
-            if raw_input("If you want to EXIT press 'e': ") == 'e' :
-                exit()
 
             get_laser_average_client()
 

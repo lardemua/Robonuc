@@ -181,7 +181,7 @@ bool service_cb(bin_picking::get_targets_pose::Request &req,
                 bin_picking::get_targets_pose::Response &res)
 {
   res.my_response = req.my_request;
-  ROS_INFO("SERVICE CALLED ! sending back response: [%ld]", (long int)res.my_response);
+  ROS_INFO("SERVICE 'get_targets_pose' CALLED ! sending back response: [%ld]", (long int)res.my_response);
   service_request = true;
   return true;
 }

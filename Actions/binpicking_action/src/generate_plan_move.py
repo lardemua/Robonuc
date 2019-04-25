@@ -81,8 +81,9 @@ def move_robot(plan, fraction, group):
     if fraction == 1.0:
         print "planning was successful"
         print "============ IS PLAN OK?? ⛔ "
+        #if 1:
         if raw_input("Should I MOVE???? If YES press y!!!!") == 'y' :
-            # MOVEMENT
+            #1 MOVEMENT
             group.execute(plan)
     else:
         print "planning was not successfull"

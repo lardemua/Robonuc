@@ -5,7 +5,7 @@
     <group if="$(arg mode)">
 
         <!-- Launch the hybrid_launch -->
-        <include file="$(find r_platform)/launch/robonuc_hybrid.launch" />
+        <include file="$(find robonuc_integration)/launch/robonuc_platform.launch" />
 
 
     </group>

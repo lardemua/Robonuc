@@ -137,21 +137,33 @@ class RefServer (ActionServer):
             ios,
             queue_size=10)
 
-        self.continye_move= False #variable to confirm planning for picking
+        self.continue_move = False #variable to confirm planning for picking
+        self.cancellAction_var=False
+        rospy.Subscriber("/joy", Joy, self.joyCallback)
 
 
     def joyCallback(self, msg) :
         
         if msg.buttons[1] == 1:
             self.continue_move= True;
+            rospy.loginfo("Button B pressed: continue_move=%d", self.continue_move)
+
+        if msg.axes[2] >= -0.90:
+            self.cancellAction_var= True;
+            #rospy.loginfo("DeathmanSwich realeased%d", self.cancellAction_var)
+        #else :
+            #self.cancellAction_var= True;
+
+
 
         return
     # Function for sending a ROS msg to the vs_IO_client.cpp node responsable for altering the state of the IOs
     # function - 1 to read, 2 to switch on and 3 to switch of the respective IO number (ionumber)
 
-    # G======================GOALCALLBACK================================
+    # ======================GOALCALLBACK================================
     def goalCallback(self, gh):
 
+        self.cancellAction_var= False;
         success = True
         goal = gh.get_goal()
 
@@ -167,19 +179,31 @@ class RefServer (ActionServer):
         #     self.set_preempted()
         #     success = False
 
+
         if goal.mode == 1:
             gh.set_accepted()
 
             # process =subprocess.call(["rosrun", "bin_picking", "move_fanuc_demo.py", "&"])
             #process = subprocess.call(["roslaunch", "robonuc_integration", "display_urdf_total.launch"])
 
-            # time.sleep(5)
+            time.sleep(3)
 
             # process.kill()
+            # if SimpleActionServer._as.is_preempt_requested(): 
+            #     rospy.loginfo('%s: Preempted' % self.name)
+            #     self.set_preempted()
+            #     success = False
+            #     return
+
+            if self.cancellAction_var==True:
+                rospy.loginfo("Action cancelled")
+                gh.set_aborted(None, "The ref server has aborted")
+                return
+
+
             # ========PICKING==========
             rospy.Subscriber("/targets_pose", TargetsPose, callback_targets_pose)
             rospy.Subscriber("/output_laser_sensor_average", Float32, callback_laser_sensor)
-            rospy.Subscriber("/joy", Joy, self.joyCallback)
 
             self.group.set_planning_time(10.0)
             self.group.set_planner_id("RRTConnectkConfigDefault")
@@ -217,8 +241,21 @@ class RefServer (ActionServer):
             plan2, fraction2 = generate_plan(self.group, eef_position_laser, 5, quaternion)
 
             # MOVING
+            inc_sleep=0
             print("Press BUTTON B to execute the planning and continue B-picking: ")
-            time.sleep(5)
+            self.continue_move= False
+            while ( inc_sleep<=10 ) :
+                time.sleep(1)
+                inc_sleep+=1
+                if (self.continue_move == True):
+                    break
+                
+                if self.cancellAction_var==True:
+                    rospy.loginfo("Action cancelled")
+                    gh.set_aborted(None, "The ref server has aborted")
+                    return
+                
+
             if (self.continue_move):
                 move_robot(plan2, fraction2, self.group)
 
@@ -243,6 +280,11 @@ class RefServer (ActionServer):
                 plan3, fraction3 = generate_plan(self.group, approx_point, 5, quaternion)
 
                 rospy.loginfo("Plan generated")
+
+                if self.cancellAction_var==True:
+                    rospy.loginfo("Action cancelled")
+                    gh.set_aborted(None, "The ref server has aborted")
+                    return
 
 
                 # # MOVING

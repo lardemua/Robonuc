@@ -1,0 +1,101 @@
+<launch>
+	<!-- Load the parameters file -->
+	<rosparam command="load" file="$(find r_platform)/params/default.yaml"/>
+	<!-- joy node -->
+	<node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+		<param name="dev" type="string" value="/dev/input/js0" />
+		<param name="deadzone" value="0.12" />
+		<param name="autorepeat_rate" value="20" />
+	</node>
+	<node pkg="r_platform" type="r_hybrid" name="r_hybrid" />
+
+	<node pkg="r_platform" type="decompose_vel" name="decompose_vel" />
+	<node pkg="r_platform" type="r_client_node" name="r_client_node" />
+	<!-- <node pkg="hokuyo_node" type="
+	" name="hokuyo_node"/> -->
+
+
+
+
+	<node name="hokuyo1" pkg="hokuyo_node" type="hokuyo_node">
+		<param name="port" type="string" value="/dev/ttyACM0" />
+		<param name="frame_id" value="laser1"/>
+		<param name="min_ang" type="double" value="-1.9" />
+		<param name="max_ang" type="double" value="1.9" />
+		<param name="skip" type="int" value="0" />
+		<param name="intensity" value="false" />
+		<remap from="scan" to="scan1" />
+	</node>
+	<node name="hokuyo0" pkg="hokuyo_node" type="hokuyo_node">
+		<param name="port" type="string" value="/dev/ttyACM1" />
+		<param name="frame_id" value="laser"/>
+		<param name="min_ang" type="double" value="-2.35619449019234492883" />
+		<param name="max_ang" type="double" value="2.35619449019234492883" />
+		<param name="skip" type="int" value="0" />
+		<param name="intensity" value="false" />
+		<remap from="scan" to="scan0" />
+	</node>
+
+
+	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hector_slam_example)/launch/rviz_cfg.rviz"/> -->
+
+
+
+
+
+	<!-- <include file="$(find r_platform)/launch/automatic.launch"/> -->
+	<node pkg="odom" type="odom_node" name="odom_node"/>
+	<param name="pub_map_odom_transform" value="true"/>
+	<param name="map_frame" value="map"/>
+	<param name="base_frame" value="base_frame"/>
+	<param name="odom_frame" value="odom"/>
+
+
+	<node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="0 0 0 0 0 0 map odom_wheel 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="odom_2_odom" args="0 0 0 0 0 0 odom_frame odom 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="odom_2_base_footprint" args="0 0 0 0 0 0 odom base_footprint 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_footprint_2_base_link" args="0 0 0 0 0 0 base_footprint base_link 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_link_2_base_stabilized_link" args="0 0 0 0 0 0 base_link base_stabilized 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_stablized_2_base_frame" args="0 0 0 0 0 0 base_stabilized base_frame 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_frame_2_laser_link" args="0 0 0 0 0 0 base_frame laser 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_2_nav_link" args="0 0 0 0 0 0 base_frame nav 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="odom_2_map" args="0 0 0 0 0 0 map odom_wheel 100"/>
+	<!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hector_slam_example)/launch/rviz_cfg.rviz"/> -->
+	<include file="$(find hector_slam_example)/launch/default_mapping.launch"/>
+	<include file="$(find hector_geotiff)/launch/geotiff_mapper.launch"/>
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+		<rosparam file="$(find teb_local_planner_tutorials)/cfg/diff_drive/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find teb_local_planner_tutorials)/cfg/diff_drive/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="$(find teb_local_planner_tutorials)/cfg/diff_drive/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find teb_local_planner_tutorials)/cfg/diff_drive/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find teb_local_planner_tutorials)/cfg/diff_drive/teb_local_planner_params.yaml" command="load" />
+		<param name="base_global_planner" value="global_planner/GlobalPlanner" />
+		<param name="planner_frequency" value="1.0" />
+		<param name="planner_patience" value="5.0" />
+		<param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+		<param name="controller_frequency" value="10.0" />
+		<param name="controller_patience" value="10.0" />
+		<!-- <remap from="cmd_vel" to="/navi_commands"/> -->
+	</node>
+
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
+
+
+
+
+	<!-- <param name="map_frame" value="map"/>
+	<node pkg="tf" type="static_transform_publisher" name="base_frame2laser" args="0 0 0 0 0 0 map laser 100"/> -->
+	<node pkg="tf" type="static_transform_publisher" name="laser2laser1" args="-0.755 0 0 3.14159 0 0 laser laser1 100"/>
+
+
+
+
+	<node pkg="ira_laser_tools" name="laserscan_multi_merger" type="laserscan_multi_merger" output="screen">
+		<param name="destination_frame" value="laser"/>
+		<param name="cloud_destination_topic" value="/merged_cloud"/>
+		<param name="scan_destination_topic" value="/scan"/>
+		<param name="laserscan_topics" value ="/scan0 /scan1" />
+		<!-- LIST OF THE LASER SCAN TOPICS TO SUBSCRIBE -->
+	</node>
+	<!-- <include file="$(find usb_cam)/launch/usb_cam-test.launch"/> -->
+</launch>

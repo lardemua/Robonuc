@@ -58,6 +58,8 @@ class checker // class checker
     std_msgs::Int8 RobotStatus_msg;
 
     bool robot_allowed = false;
+
+    bool start_auto_picking= false;
     // std::atomic<bool> robot_allowed(false);
     // std::atomic<bool> ready (false);
 
@@ -128,18 +130,28 @@ class checker // class checker
 
                 robot_allowed = true;
                 ROS_INFO("Button A pressed! Robot=%d", robot_allowed);
+                start_auto_picking= true;
             }
             //ROS_INFO("DEADMAN SWITCH - ON");
         }
         else
         {
             robot_allowed = false;
-            ac.cancelAllGoals();
-            ac_laproximation.cancelAllGoals();
-            ac_orientation.cancelAllGoals();
-            ac_binpicking.cancelAllGoals();
-            //ROS_INFO("DEADMAN SWITCH - OFF");
-            action_mode=1;
+            if (start_auto_picking)
+            {
+                ac.cancelAllGoals();
+                ac_laproximation.cancelAllGoals();
+                ac_orientation.cancelAllGoals();
+                ac_binpicking.cancelAllGoals();
+                //ROS_INFO("DEADMAN SWITCH - OFF");
+                action_mode=1;
+                RobotStatusCallback();
+                goal.mode = 1;
+                ac.sendGoal(goal);
+            }
+            start_auto_picking = false;
+
+            
         }
         // vel_pub_.publish(vel_msg);
     }
@@ -279,7 +291,7 @@ class checker // class checker
             }
 
             action_mode = 1; //return navigation
-            goal.mode = 0;
+            goal.mode = 1;
             ac.sendGoal(goal);
         }
         else

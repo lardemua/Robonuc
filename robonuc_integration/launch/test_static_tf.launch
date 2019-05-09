@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node pkg="tf" type="static_transform_publisher" name="map_2_odom" args="2 0 0 0 0 0 map odom1 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="map_2_odom2" args="0 5 0 0 0 0 map odom2 100"/>
+    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find teb_local_planner_tutorials)/cfg/rviz_navigation.rviz" /> -->
+</launch>

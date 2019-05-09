@@ -47,14 +47,6 @@ yaw = Float32()
 laser_reading = Float32()
 
 
-def monitoring_ios(function, ionumber):
-    cod = function*10 + ionumber
-    io_msg = ios()
-    io_msg.code = cod
-    print "Setting IOs code:"
-    print cod
-    #io_pub.publish(io_msg)
-
 def callback_targets_pose(targets_pose):
 
     normal.x = targets_pose.normal.x
@@ -132,7 +124,7 @@ class RefServer (ActionServer):
             PointStamped,
             queue_size=10)
         # Publisher of pointStamped of the grasping point
-        io_pub = rospy.Publisher(
+        self.io_pub = rospy.Publisher(
             '/io_client_messages',
             ios,
             queue_size=10)
@@ -159,6 +151,14 @@ class RefServer (ActionServer):
         return
     # Function for sending a ROS msg to the vs_IO_client.cpp node responsable for altering the state of the IOs
     # function - 1 to read, 2 to switch on and 3 to switch of the respective IO number (ionumber)
+
+    def monitoring_ios(self,function, ionumber):
+        cod = function*10 + ionumber
+        io_msg = ios()
+        io_msg.code = cod
+        print "Setting IOs code:"
+        print cod
+        self.io_pub.publish(io_msg)
 
     # ======================GOALCALLBACK================================
     def goalCallback(self, gh):
@@ -265,7 +265,8 @@ class RefServer (ActionServer):
 
 
                 print (laser_reading.data )
-                laser_reading_float = laser_reading.data + 1.000
+                laser_reading_float = laser_reading.data - 4.000 #esta a ir muito a baixo..
+                #laser_reading_float = laser_reading.data + 1.000
                 # for vertical eggs
                 # laser_reading_float = laser_reading.data + 1.800
 
@@ -294,13 +295,21 @@ class RefServer (ActionServer):
                 # GENERATING PLAN
                 plan4, fraction4 = generate_plan(self.group, grasping_point, 5, quaternion)
 
+                if self.cancellAction_var==True:
+                    rospy.loginfo("Action cancelled")
+                    gh.set_aborted(None, "The ref server has aborted")
+                    return
+
                 # MOVING
                 move_robot(plan4, fraction4, self.group)
 
+                joint_values = self.group.get_current_joint_values()
+                time.sleep(1)
+
                 # IO number 8 activates the suction
                 # First activate IO number for for IO number 8 to work
-                monitoring_ios(2,4)
-                monitoring_ios(2,8)
+                self.monitoring_ios(2,4)
+                self.monitoring_ios(2,8)
 
                 # 5th POSITION -Return to Approximation point
                 # GENERATING PLAN 5
@@ -309,13 +318,32 @@ class RefServer (ActionServer):
                 # MOVING
                 move_robot(plan5, fraction5, self.group)
 
-                final_point = Vector3()
-                final_point.x = 0.440
-                final_point.y = -0.270
-                final_point.z = 0.200
 
-                # Quaternions of the Euler angles
-                quaternion_final = quaternion_from_euler(-np.pi, 0, roll)
+                #rotate robot
+                joint_values[0] = -2.7
+                joint_values[1] = 0
+                joint_values[2] = 0
+                joint_values[3] = 0
+                joint_values[4] = -1.57
+                joint_values[5] = 0
+                self.group.set_joint_value_target(joint_values)
+                self.group.go(wait=True)
+
+                # final_point = Vector3()
+                # final_point.x = 0.440
+                # final_point.y = -0.270
+                # final_point.z = 0.200
+
+                # # Quaternions of the Euler angles
+                # quaternion_final = quaternion_from_euler(-np.pi, 0, roll)
+
+                final_point = Vector3()
+                final_point.x = -0.4477
+                final_point.y = -0.1536
+                final_point.z = 0.1616
+
+                quaternion_final = quaternion_from_euler(3.05, -0.026, -0.184)
+
 
                 # 1st POSITION - Visualize Workspace
                 # GENERATING PLAN
@@ -323,9 +351,11 @@ class RefServer (ActionServer):
 
                 # MOVEMENT
                 move_robot(plan6, fraction6, self.group)
+                
 
-                monitoring_ios(3,8)
-                monitoring_ios(3,4)
+
+                self.monitoring_ios(3,8)
+                self.monitoring_ios(3,4)
                 continue_move=False;
             else:
                 success = False

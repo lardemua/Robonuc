@@ -65,7 +65,7 @@ def mode_4(joint_values):
     joint_values[1] = 0
     joint_values[2] = 0
     joint_values[3] = 0
-    joint_values[4] = 0
+    joint_values[4] = -1.5708
     joint_values[5] = 0
 
     return joint_values
@@ -95,19 +95,23 @@ group = moveit_commander.MoveGroupCommander("manipulator")
 
 joint_values = group.get_current_joint_values() #incialize joint_values
 
+cart_values = group.get_current_pose()
+
+rpy=group.get_current_rpy()
+
 print "============ Joint values: ", joint_values
-#group.clear_pose_targets()
 
+print "============ Cart_values: ", cart_values
+
+print "============ RPY: ", rpy
+
+
+# group.clear_pose_targets()  # clear pose target
 # joint_values = mode_4(joint_values)
+# group.set_joint_value_target(joint_values)
+# group.go(wait=True)
+# group.clear_pose_targets()
 
-#joint_values = mode_2(joint_values)
-
-
-#group.set_joint_value_target(joint_values)
-
-# plan2 = group.plan()
-
-#group.go(wait=True)
 
 
 # rate = rospy.Rate(10) # 10hz

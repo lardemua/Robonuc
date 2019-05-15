@@ -30,6 +30,8 @@ from robonuc.msg import ios
 
 from generate_plan_move import generate_plan, move_robot
 
+from visualization_msgs.msg import Marker
+
 #import subprocess
 # import threading
 # import collections
@@ -129,6 +131,8 @@ class RefServer (ActionServer):
             ios,
             queue_size=10)
 
+        self.markerPub = rospy.Publisher('robotMarker', Marker, queue_size=1)
+
         self.continue_move = False #variable to confirm planning for picking
         self.cancellAction_var=False
         rospy.Subscriber("/joy", Joy, self.joyCallback)
@@ -174,11 +178,33 @@ class RefServer (ActionServer):
 
         rospy.loginfo("Got goal %d", int(goal.mode))
 
-        # if self.is_preempt_requested():
-        #     rospy.loginfo('%s: Preempted' % self.name)
-        #     self.set_preempted()
-        #     success = False
+        
+                    #================MArKER============
+        self.robotMarker = Marker()
+        self.robotMarker.header.frame_id = "eef_tool_tip"
+        self.robotMarker.header.stamp    = rospy.Time.now()
+        self.robotMarker.ns = "robot"
+        self.robotMarker.id = 0
+        self.robotMarker.type = Marker.TEXT_VIEW_FACING
+        #self.robotMarker.text= " Action Started"
+        self.robotMarker.action = Marker.ADD
+        self.robotMarker.pose.position.x = 0
+        self.robotMarker.pose.position.y = 0 
+        self.robotMarker.pose.position.z = 0.10 # shift sphere up
+        self.robotMarker.pose.orientation.x = 0
+        self.robotMarker.pose.orientation.y = 0
+        self.robotMarker.pose.orientation.z = 0
+        self.robotMarker.pose.orientation.w = 1.0
+        self.robotMarker.scale.x = 0.05
+        self.robotMarker.scale.y = 0.05
+        self.robotMarker.scale.z = 0.05
+        self.robotMarker.color.r = 1.0
+        self.robotMarker.color.g = 0.0
+        self.robotMarker.color.b = 0.0
+        self.robotMarker.color.a = 1.0
 
+        self.robotMarker.text= " Action Started"
+        self.markerPub.publish(self.robotMarker)
 
         if goal.mode == 1:
             gh.set_accepted()
@@ -186,18 +212,14 @@ class RefServer (ActionServer):
             # process =subprocess.call(["rosrun", "bin_picking", "move_fanuc_demo.py", "&"])
             #process = subprocess.call(["roslaunch", "robonuc_integration", "display_urdf_total.launch"])
 
-            time.sleep(3)
+            time.sleep(1)
 
-            # process.kill()
-            # if SimpleActionServer._as.is_preempt_requested(): 
-            #     rospy.loginfo('%s: Preempted' % self.name)
-            #     self.set_preempted()
-            #     success = False
-            #     return
 
             if self.cancellAction_var==True:
                 rospy.loginfo("Action cancelled")
                 gh.set_aborted(None, "The ref server has aborted")
+                self.robotMarker.text= "Action cancelled"
+                self.markerPub.publish(self.robotMarker)
                 return
 
 
@@ -209,9 +231,9 @@ class RefServer (ActionServer):
             self.group.set_planner_id("RRTConnectkConfigDefault")
 
             visualization_point = Vector3()
-            visualization_point.x = 0.480
+            visualization_point.x = 0.580
             visualization_point.y = 0.000
-            visualization_point.z = 0.440
+            visualization_point.z = 0.390
             # visualization_point.z = 0.440 -0.200
 
             # Quaternions of the Euler angles
@@ -243,16 +265,29 @@ class RefServer (ActionServer):
             # MOVING
             inc_sleep=0
             print("Press BUTTON B to execute the planning and continue B-picking: ")
+            #marker
+            self.robotMarker.text= "Press BUTTON B to execute the planning and continue B-picking"
+            self.markerPub.publish(self.robotMarker)
+
+            #=============================
+
+
+
             self.continue_move= False
             while ( inc_sleep<=10 ) :
                 time.sleep(1)
                 inc_sleep+=1
                 if (self.continue_move == True):
+                    self.robotMarker.color.a = 0
+                    self.markerPub.publish(self.robotMarker)
                     break
                 
                 if self.cancellAction_var==True:
                     rospy.loginfo("Action cancelled")
                     gh.set_aborted(None, "The ref server has aborted")
+                    self.robotMarker.text= "Action cancelled"
+                    self.markerPub.publish(self.robotMarker)
+                    time.sleep(2)
                     return
                 
 
@@ -265,7 +300,7 @@ class RefServer (ActionServer):
 
 
                 print (laser_reading.data )
-                laser_reading_float = laser_reading.data - 4.000 #esta a ir muito a baixo..
+                laser_reading_float = laser_reading.data - 6.000 #esta a ir muito a baixo..
                 #laser_reading_float = laser_reading.data + 1.000
                 # for vertical eggs
                 # laser_reading_float = laser_reading.data + 1.800
@@ -285,6 +320,8 @@ class RefServer (ActionServer):
                 if self.cancellAction_var==True:
                     rospy.loginfo("Action cancelled")
                     gh.set_aborted(None, "The ref server has aborted")
+                    self.robotMarker.text= "Action cancelled"
+                    self.markerPub.publish(self.robotMarker)
                     return
 
 
@@ -356,10 +393,20 @@ class RefServer (ActionServer):
 
                 self.monitoring_ios(3,8)
                 self.monitoring_ios(3,4)
+
+
+                joint_values[0] = 0
+                self.group.set_joint_value_target(joint_values)
+                self.group.go(wait=True)
+
+                self.robotMarker.text= "Action Done"
+                self.markerPub.publish(self.robotMarker)
                 continue_move=False;
             else:
                 success = False
                 continue_move=False;
+                self.robotMarker.text= "Time out! Action cancelled"
+                self.markerPub.publish(self.robotMarker)
 
             # =========//===Endpicking===//===========
         else:

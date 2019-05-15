@@ -4,7 +4,12 @@
 
   <!-- Planing and execution -->
   <group>
-    <include file="$(find fanuc_moveit_config)/launch/moveit_planning_execution.launch">
+    <!-- <include file="$(find fanuc_moveit_config)/launch/moveit_planning_execution.launch">
+      <arg name="sim" value="false" />
+      <arg name="robot_ip" value="$(arg ip_str)" />
+    </include> -->
+
+    <include file="$(find moveit_ROBONUC_pack)/launch/moveit_planning_execution.launch">
       <arg name="sim" value="false" />
       <arg name="robot_ip" value="$(arg ip_str)" />
     </include>

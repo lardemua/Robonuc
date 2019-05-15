@@ -10,7 +10,7 @@
     <!-- moveit lancuh and robot control -->
     <!-- <include file="$(find robonuc_integration)/launch/aprox_orientation_kinect.launch" /> -->
     <!-- Kinect Drivers -->
-    <include file="$(find bin_picking)/launch/kinect.launch" />
+    <include file="$(find robonuc_integration)/launch/kinect.launch" />
 
     <!-- action serv for robot status/mode -->
     <node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />

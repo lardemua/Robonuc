@@ -6,8 +6,8 @@
         <arg name="image" value="image_raw" />
         <!-- <arg name="fiducial_len" value="0.136" /> -->
         <!-- <arg name="fiducial_len" value="0.82" /> -->
-        <arg name="fiducial_len" value="0.08" />
-        <!-- apara aruco pequeno -> 0.08 -->
+        <arg name="fiducial_len" value="0.163" />
+        <!-- apara aruco pequeno -> len= 0.082 // 0.163 grande -->
         <arg name="dictionary" value="16" /> 
         <!-- <arg name="fiducial_len" value="0.1558" /> -->
     </include>
@@ -37,6 +37,6 @@
     <node pkg="visp_hand2eye_calibration" type="visp_hand2eye_calibration_calibrator" name="calibrator_node" />
     
     <!-- launch the kinetic -->
-    <include file="$(find bin_picking)/launch/kinect.launch"/>
+    <include file="$(find robonuc_integration)/launch/kinect.launch"/>
     
 </launch>

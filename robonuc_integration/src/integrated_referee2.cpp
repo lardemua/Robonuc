@@ -293,6 +293,7 @@ class checker // class checker
             action_mode = 1; //return navigation
             goal.mode = 1;
             ac.sendGoal(goal);
+            //robot_allowed = false;
         }
         else
         {

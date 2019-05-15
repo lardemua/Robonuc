@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: robonuc_integration
+    relative_path: urdf/robonuc.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/ROBONUC.srdf
+  CONFIG:
+    author_name: Tiago Tavares
+    author_email: tiagoatavares@ua.pt
+    generated_timestamp: 1557411356

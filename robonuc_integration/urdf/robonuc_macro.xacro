@@ -6,7 +6,7 @@
     <xacro:bin_picking prefix="" />
 
     <!-- include r_platform+sensores-->
-    <xacro:include filename="$(find r_platform)/urdf/r_platform_macro.xacro"/>
+    <xacro:include filename="$(find r_platform)/urdf/r_platform_and_hokuyo_macro.xacro"/>
     <xacro:r_platform prefix="" />
 
 

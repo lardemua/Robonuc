@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 
-ARUCO_ID = 10
-CAMERA_FRAME = 'camera_base_link'
-ROBOT_BASE_FRAME = 'robot_eef_tool_tip'
+# ARUCO_ID = 473 #10
+# CAMERA_FRAME = 'camera_base_link'
+# ROBOT_BASE_FRAME = 'robot_eef_tool_tip'
 
 
 import rospy
@@ -45,6 +45,7 @@ def update_fid(msg):
     fid = geometry_msgs.msg.TransformStamped()
     fid.header.frame_id = 'camera_rgb_optical_frame'
     fid.child_frame_id = 'calibration_object'
+    fid.header.stamp = msg.header.stamp
     fid.transform.translation.x = fid_transform.translation.x
     fid.transform.translation.y = fid_transform.translation.y
     fid.transform.translation.z = fid_transform.translation.z

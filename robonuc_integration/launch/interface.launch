@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <include file="$(find moveit_ROBONUC_pack)/launch/moveit_rviz.launch">
+        <arg name="config" value="true"/>
+    </include>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
+
+</launch>

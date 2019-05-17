@@ -7,7 +7,7 @@
         <!-- <arg name="fiducial_len" value="0.136" /> -->
         <!-- <arg name="fiducial_len" value="0.82" /> -->
         <arg name="fiducial_len" value="0.163" />
-        <!-- apara aruco pequeno -> len= 0.082 // 0.163 grande -->
+        <!-- apara aruco pequeno -> len= 0.082 // 0.163 grande // 0.621 gigante -->
         <arg name="dictionary" value="16" /> 
         <!-- <arg name="fiducial_len" value="0.1558" /> -->
     </include>

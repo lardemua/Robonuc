@@ -26,12 +26,12 @@ def mode_0(joint_values):
 
 def mode_1(joint_values):
     print "mode_1_navigation"
-    joint_values[0] = 0.05
-    joint_values[1] = -0.67
-    joint_values[2] = -1.07
-    joint_values[3] = -0.07
-    joint_values[4] = -0.74
-    joint_values[5] = -0.01
+    joint_values[0] = -1.4793
+    joint_values[1] = -0.887
+    joint_values[2] = -0.940
+    joint_values[3] = -1.284
+    joint_values[4] = -1.5205
+    joint_values[5] = -0.038
     return joint_values
 
 def mode_2(joint_values):

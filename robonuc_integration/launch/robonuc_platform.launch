@@ -1,4 +1,7 @@
 <launch>
+
+	<arg name="rviz_arg" default="true"/>
+
 	<!-- Load the parameters file -->
 	<rosparam command="load" file="$(find r_platform)/params/default.yaml"/>
 	<!-- joy node -->
@@ -80,7 +83,13 @@
 		<!-- <remap from="cmd_vel" to="/navi_commands"/> -->
 	</node>
 
-	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
+
+	<group if="$(arg rviz_arg)">
+
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
+
+    </group>
+	
 
 
 

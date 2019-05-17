@@ -48,12 +48,12 @@ def mode_2(joint_values):
 def mode_3(joint_values):
     print "mode_4_picking"
 
-    joint_values[0] = 0
-    joint_values[1] = 0
-    joint_values[2] = 0
-    joint_values[3] = 0
-    joint_values[4] = 0
-    joint_values[5] = 0
+    joint_values[0] = -1.61
+    joint_values[1] = -1.12
+    joint_values[2] = -0.94
+    joint_values[3] = -0.64
+    joint_values[4] = -1.13
+    joint_values[5] = 0.08
 
     return joint_values
 
@@ -106,11 +106,11 @@ print "============ Cart_values: ", cart_values
 print "============ RPY: ", rpy
 
 
-# group.clear_pose_targets()  # clear pose target
-# joint_values = mode_4(joint_values)
-# group.set_joint_value_target(joint_values)
-# group.go(wait=True)
-# group.clear_pose_targets()
+group.clear_pose_targets()  # clear pose target
+joint_values = mode_3(joint_values)
+group.set_joint_value_target(joint_values)
+group.go(wait=True)
+group.clear_pose_targets()
 
 
 

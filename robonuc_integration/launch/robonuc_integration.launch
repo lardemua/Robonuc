@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="rviz" default="false"/>
+
+    <!-- Launch the hybrid_launch  (with joy for xbox )-->
+    <include file="$(find robonuc_integration)/launch/robonuc_platform.launch">
+        <arg name="rviz_arg" value="$(arg rviz)"/>
+    </include>
+
+
+    <!-- SensorRs232 -->
+    <include file="$(find robonuc_integration)/launch/sensorRS232_v2.launch" />
+
+    <!-- Launch laser_limit for automatic perception  -->
+    <rosparam command="load" file="$(find robonuc_integration)/param/checker_params.yaml"/>
+    <!-- Node to check check_feasibility based on laser_limit -->
+    <node name="check_feasibility" pkg="robonuc_integration" type="check_feasibility" output="screen"/>
+
+    <!-- Launch the referee! Decides to move or to stop platform, and execute or not B-picking  -->
+    <node name="integrated_referee2" pkg="robonuc_integration" type="integrated_referee2" output="screen"/>
+
+    <!-- moveit lancuh and robot control -->
+    <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
+
+    <group if="$(arg rviz)">
+
+        <include file="$(find moveit_ROBONUC_pack)/launch/moveit_rviz.launch">
+            <arg name="config" value="true"/>
+        </include>
+
+    </group>
+
+    <!-- action serv for robot status/mode -->
+    <node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
+
+    <!-- action serv for robotaproxmation -->
+    <node name="GetPlatformLaserAproximation" pkg="robonuc_aprox_laser_action" type="GetPlatformLaserAproximation" output="screen"/>
+
+    <!-- action serv for robotorientation -->
+    <node name="GetPlatformOrientation" pkg="robonuc_plat_orientation_action" type="GetPlatformOrientation" output="screen"/>
+
+    <!-- Kinect Drivers -->
+    <include file="$(find robonuc_integration)/launch/kinect.launch" />
+
+    <!-- launch the aruco detection -->
+    <include file="$(find aruco_detect)/launch/aruco_detect.launch">
+        <arg name="camera" value="camera/rgb" />
+        <arg name="image" value="image_raw" />
+        <arg name="fiducial_len" value="0.08" />
+        <arg name="dictionary" value="16" />
+    </include>
+
+
+    <!-- action serv for bin_picking -->
+    <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/>
+
+    <!-- Services for B-picking -->
+    <include file="$(find robonuc_integration)/launch/Picking_services.launch" />
+
+    <!-- Node to control I/Os -->
+    <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" />
+
+
+</launch>

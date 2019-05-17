@@ -20,7 +20,7 @@
     <!-- action serv for robotaproxmation -->
     <node name="GetPlatformLaserAproximation" pkg="robonuc_aprox_laser_action" type="GetPlatformLaserAproximation" output="screen"/>
     <!-- action serv for bin_picking -->
-    <!-- <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/> -->
+    <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/>
     <!-- Node to control I/Os necessario para o binPicking server-->
     <!-- <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" /> -->
 

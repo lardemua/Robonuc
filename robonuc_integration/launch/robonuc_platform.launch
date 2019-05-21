@@ -5,11 +5,11 @@
 	<!-- Load the parameters file -->
 	<rosparam command="load" file="$(find r_platform)/params/default.yaml"/>
 	<!-- joy node -->
-	<node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+	<!-- <node respawn="true" pkg="joy" type="joy_node" name="joy_node">
 		<param name="dev" type="string" value="/dev/input/js0" />
 		<param name="deadzone" value="0.12" />
 		<param name="autorepeat_rate" value="20" />
-	</node>
+	</node> -->
 	<node pkg="r_platform" type="r_hybrid" name="r_hybrid" />
 
 	<node pkg="r_platform" type="decompose_vel" name="decompose_vel" />
@@ -86,10 +86,17 @@
 
 	<group if="$(arg rviz_arg)">
 
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
+		<node name="rviz" pkg="rviz" type="rviz" args="-d $(find robonuc_integration)/config/rviz_navigation.rviz" />
 
-    </group>
-	
+		<!-- joy node -->
+		<node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+			<param name="dev" type="string" value="/dev/input/js0" />
+			<param name="deadzone" value="0.12" />
+			<param name="autorepeat_rate" value="20" />
+		</node>
+
+	</group>
+
 
 
 

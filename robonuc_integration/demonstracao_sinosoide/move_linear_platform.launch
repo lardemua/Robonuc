@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+    
+    <!-- Node to move linear_plat -->
+    <node name="move_linear_vel_platform" pkg="robonuc_integration" type="move_linear_vel_platform.py" output="screen"/>
+		 
+
+
+</launch>

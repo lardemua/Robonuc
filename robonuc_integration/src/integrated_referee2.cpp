@@ -226,6 +226,12 @@ class checker // class checker
             finished_before_timeout_orientation = ac_orientation.waitForResult(ros::Duration(60));
             if (finished_before_timeout_orientation)
             {
+                robonuc_plat_orientation_action::Robot_PlatformOrientationResultConstPtr myresult_c_orientation = ac_orientation.getResult();
+
+                if (myresult_c_orientation->result != true)
+                {
+                    return false;
+                }
                 ROS_INFO("AUTO-ORIENTATION DONE");
                 return true;
             }
@@ -259,6 +265,13 @@ class checker // class checker
         ac_binpicking.sendGoal(goal_binpicking);
         bool finished_before_timeout_mode4 = ac_binpicking.waitForResult(ros::Duration(120.0));
         binpicking_action::Robot_binpickingResultConstPtr myresult_mode4 = ac_binpicking.getResult();
+
+        if (myresult_mode4->result != true)
+        {
+            return false;
+        }
+
+
         return true;
     }
 
@@ -293,7 +306,7 @@ class checker // class checker
             action_mode = 1; //return navigation
             goal.mode = 1;
             ac.sendGoal(goal);
-            //robot_allowed = false;
+            robot_allowed = false;
         }
         else
         {

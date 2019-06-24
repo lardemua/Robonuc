@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+    
+	    <!-- joy node -->
+    <node respawn="true" pkg="joy" type="joy_node" name="joy_node">
+        <param name="dev" type="string" value="/dev/input/js0" />
+        <param name="deadzone" value="0.12" />
+        <param name="autorepeat_rate" value="20" />
+    </node>
+
+    <!-- moveit lancuh and robot control -->
+    <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
+
+    <!-- Node to control I/Os -->
+    <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" />
+
+    <!-- moveit lancuh and robot control -->
+    <!-- <include file="$(find robonuc_integration)/launch/aprox_orientation_kinect.launch" /> -->
+    <!-- Kinect Drivers -->
+    <include file="$(find robonuc_integration)/launch/kinect.launch" />
+
+
+    <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/>
+    <!-- Services for B-picking -->
+    <include file="$(find robonuc_integration)/launch/Picking_services.launch" />
+
+<include file="$(find moveit_ROBONUC_pack)/launch/moveit_rviz.launch">
+            <arg name="config" value="true"/>
+        </include>
+</launch>

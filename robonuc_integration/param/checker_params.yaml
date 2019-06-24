@@ -1,1 +1,3 @@
-laser_limit: 500.0
+laser_limit: 500.0 #default=500
+aprox_vel: 0.2 #default=0.035
+orient_vel: 0.08 #default=0.04

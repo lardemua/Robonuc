@@ -20,15 +20,15 @@
     <node name="integrated_referee2" pkg="robonuc_integration" type="integrated_referee2" output="screen"/>
 
     <!-- moveit lancuh and robot control -->
-    <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" />
+    <!-- <include file="$(find robonuc_integration)/launch/moveit_fanuc.launch" /> -->
 
-    <group if="$(arg rviz)">
+    <!-- <group if="$(arg rviz)">
 
         <include file="$(find moveit_ROBONUC_pack)/launch/moveit_rviz.launch">
             <arg name="config" value="true"/>
         </include>
 
-    </group>
+    </group> -->
 
     <!-- action serv for robot status/mode -->
     <node pkg="robonuc_action" type="robot_status_server2.py" name="robot_status_server2" />
@@ -50,16 +50,16 @@
 
 
     <!-- action serv for bin_picking -->
-    <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/>
+    <!-- <node name="GetBinPicking" pkg="binpicking_action" type="GetBinPicking.py" output="screen"/> -->
 
     <!-- Services for B-picking -->
-    <include file="$(find robonuc_integration)/launch/Picking_services.launch" />
+    <!-- <include file="$(find robonuc_integration)/launch/Picking_services.launch" /> -->
 
     <!-- Node to control I/Os -->
-    <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" />
+    <!-- <node name="vs_IO_client" pkg="robonuc" type="vs_IO_client" /> -->
 
     <!-- Kinect Drivers -->
-    <include file="$(find robonuc_integration)/launch/kinect.launch" />
+    <!-- <include file="$(find robonuc_integration)/launch/kinect.launch" /> -->
 
 
 </launch>

@@ -348,6 +348,8 @@ class RefServer (ActionServer):
                 self.monitoring_ios(2,4)
                 self.monitoring_ios(2,8)
 
+                time.sleep(1)
+
                 # 5th POSITION -Return to Approximation point
                 # GENERATING PLAN 5
                 plan5, fraction5 = generate_plan(self.group, approx_point, 5, quaternion)
@@ -393,6 +395,7 @@ class RefServer (ActionServer):
 
                 self.monitoring_ios(3,8)
                 self.monitoring_ios(3,4)
+                time.sleep(1)
 
 
                 joint_values[0] = 0

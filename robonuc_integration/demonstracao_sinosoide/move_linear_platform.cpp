@@ -15,10 +15,6 @@
 
 #include <r_platform/navi.h> //for /navi_commands
 
-#include <actionlib/server/simple_action_server.h>
-
-#include <robonuc_aprox_laser_action/Robot_PlatformLaserAproximationAction.h>
-
 #include <unistd.h> //for sleep
 
 class AproximationAction
@@ -68,7 +64,6 @@ class AproximationAction
     void executeCB(const robonuc_aprox_laser_action::Robot_PlatformLaserAproximationGoalConstPtr &goal)
     {
         float velocidade = 0.04;
-        n.getParam("/aprox_vel", velocidade);
         //helper variables
         //ros::Rate r(0.05);
         bool success = true;
@@ -120,12 +115,26 @@ class AproximationAction
     }
 };
 
+
+class myclass
+
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "GetPlatformLaserAproximation");
+    ros::init(argc, argv, "linear_move_platform");
+    ros::NodeHandle n;
 
-    AproximationAction PlatformLaserAproximation("GetPlatformLaserAproximation");
-    ros::spin();
+    myclass my_class;
+    ros::Rate loop_rate(200);
+
+    while (ros::ok())
+    {
+
+        my_class.Callback();
+
+        ros::spinOnce();
+
+        loop_rate.sleep();
+    }
 
     return 0;
 }

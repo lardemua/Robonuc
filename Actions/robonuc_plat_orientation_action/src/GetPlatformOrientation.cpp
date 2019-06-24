@@ -94,6 +94,7 @@ class OrientationAction
         ros::Rate r(0.2);
         // helper variables
         float velocidade = 0.035;
+        nh_.getParam("/orient_vel", velocidade);
         bool success = true;
         float x, y, z;
         double th_R = 0.100;
@@ -115,6 +116,9 @@ class OrientationAction
                 // set the action state to preempted
                 as_.setPreempted();
                 success = false;
+                vel_msg.linear_vel = 0;
+                vel_msg.angular_vel = 0;
+                vel_pub.publish(vel_msg);
                 break;
             }
 
